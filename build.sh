@@ -1,28 +1,50 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
-    mkdir -p .repo/local_manifests
-    mv romx/A11/los/patch.sh .
-    mv romx/A11/los/* .repo/local_manifests
-    retry_rc repo sync -c -j16 --force-sync --no-clone-bundle --no-tags --prune
-    source patch.sh
+    git clone -q https://github.com/AXP-OS/build Axp
+
+    mkdir -p .repo/local_manifests/
+    mv romx/A10/remove.xml .repo/local_manifests/roomservice.xml
+
+    repo sync -j16 -c --force-sync --no-clone-bundle --no-tags --prune
+
+    rm -rf frameworks/base/packages/OsuLogin
+    rm -rf frameworks/base/packages/PrintRecommendationService
+
+    declare -A PATCHES=(
+        ["art"]="android_art/0001-constify_JNINativeMethod.patch"
+        ["external/conscrypt"]="android_external_conscrypt/0001-constify_JNINativeMethod.patch"
+        ["frameworks/base"]="android_frameworks_base/0018-constify_JNINativeMethod.patch"
+        ["frameworks/opt/net/wifi"]="android_frameworks_opt_net_wifi/0001-constify_JNINativeMethod.patch"
+        ["libcore"]="android_libcore/0004-constify_JNINativeMethod.patch"
+        ["packages/apps/Nfc"]="android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch"
+        ["packages/apps/Bluetooth"]="android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch"
+        ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
+    )
+
+    for target_dir in "${!PATCHES[@]}"; do
+        patch_file="${PATCHES[$target_dir]}"
+        cd "$target_dir" || exit
+        git am "$WORKDIR/Axp/Patches/LineageOS-17.1/$patch_file"
+        cd "$WORKDIR"
+    done
 }
 
-build_src() {    
+build_src() {
     export PRODUCT_DISABLE_SCUDO=true
-    export SKIP_ABI_CHECKS=true
+    
     source build/envsetup.sh
-    set_rbeenv_vars
+    set_ccache_vars
     lunch lineage_RMX2185-user
-    mka bacon
+    mka bacon # & sleep 90m; kill %1; ccache -s
 }
 
 upload_src() {
-  upSrc="out/target/product/*/*-RMX*.zip"
-  curl bashupload.com -T $upSrc || true
-  mkdir -p ~/.config
-  mv romx/config/* ~/.config 2>/dev/null || true
-  timeout 15m telegram-upload $upSrc --caption "$CIRRUS_COMMIT_MESSAGE" --to $idtl
+    upSrc="out/target/product/*/*-RMX*.zip"
+    mkdir -p ~/.config && mv romx/config/* ~/.config || true   
+    curl bashupload.com -T $upSrc || true    
+    timeout 15m telegram-upload $upSrc --caption "${CIRRUS_COMMIT_MESSAGE}" --to $idtl || true
+    save_cache
 }

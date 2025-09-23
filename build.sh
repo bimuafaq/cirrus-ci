@@ -3,7 +3,7 @@
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
-    git clone -q https://github.com/AXP-OS/build Axp
+    git clone -q https://github.com/rovars/build r_patch
 
     mkdir -p .repo/local_manifests/
     mv romx/A10/remove.xml .repo/local_manifests/roomservice.xml
@@ -27,18 +27,28 @@ setup_src() {
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
-        git am "$WORKDIR/Axp/Patches/LineageOS-17.1/$patch_file"
+        git am "$WORKDIR/r_patch/Patches/LineageOS-17.1/$patch_file"
         cd "$WORKDIR"
     done
+    rm -rf r_patch
 }
 
 build_src() {
-    export PRODUCT_DISABLE_SCUDO=true
-    
-    source build/envsetup.sh
-    set_ccache_vars
-    lunch lineage_RMX2185-user
-    mka bacon # & sleep 90m; kill %1; ccache -s
+  source build/envsetup.sh
+  export PRODUCT_DISABLE_SCUDO=true
+  export OWN_KEYS_DIR=$WORKDIR/romx/A10/keys
+
+  if [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] ; then
+    ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
+    echo "Symlink testkey.pk8 created"
+  fi
+  if [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] ; then
+    ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
+    echo "Symlink testkey.x509.pem created"
+  fi
+
+  set_ccache_vars
+  brunch RMX2185 user # & sleep 90m; kill %1
 }
 
 upload_src() {

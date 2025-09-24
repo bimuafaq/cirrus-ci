@@ -24,8 +24,7 @@ setup_src() {
         ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
     )
 
-    for target_dir in "${!PATCHES[@]}"; do
-        patch_file="${PATCHES[$target_dir]}"
+    for target_dir patch_file in "${(kv)PATCHES[@]}"; do
         cd "$target_dir" || exit
         git am "$WORKDIR/r_patch/Patches/LineageOS-17.1/$patch_file"
         cd "$WORKDIR"
@@ -34,27 +33,21 @@ setup_src() {
 }
 
 build_src() {
-  source build/envsetup.sh
-  export PRODUCT_DISABLE_SCUDO=true
-  export OWN_KEYS_DIR=$WORKDIR/romx/A10/keys
+    source build/envsetup.sh
+    export PRODUCT_DISABLE_SCUDO=true
+    export OWN_KEYS_DIR=$WORKDIR/romx/A10/keys
 
-  if [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] ; then
-    ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
-    echo "Symlink testkey.pk8 created"
-  fi
-  if [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] ; then
-    ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
-    echo "Symlink testkey.x509.pem created"
-  fi
+    [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
+    [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-  set_ccache_vars
-  brunch RMX2185 user # & sleep 90m; kill %1
+    set_ccache_vars
+    brunch RMX2185 user
 }
 
 upload_src() {
     upSrc="out/target/product/*/*-RMX*.zip"
-    mkdir -p ~/.config && mv romx/config/* ~/.config || true   
-    curl bashupload.com -T $upSrc || true    
+    mkdir -p ~/.config && mv romx/config/* ~/.config || true
+    curl bashupload.com -T $upSrc || true
     timeout 15m telegram-upload $upSrc --caption "${CIRRUS_COMMIT_MESSAGE}" --to $idtl || true
     save_cache
 }

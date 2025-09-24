@@ -3,6 +3,7 @@ set -e
 
 CI_DIR=$PWD
 WORKDIR=$CI_DIR/android
+source "$CI_DIR/build.sh"
 
 _nfy_script() {
     tle -t "${CIRRUS_COMMIT_MESSAGE} ( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>$CIRRUS_BRANCH</a> )"
@@ -131,5 +132,4 @@ main() {
     esac
 }
 
-source "$CI_DIR/build.sh"
 main "$@"

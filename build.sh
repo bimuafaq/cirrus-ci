@@ -24,12 +24,12 @@ setup_src() {
         ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
     )
 
-    for target_dir patch_file in "${(kv)PATCHES[@]}"; do
+    for target_dir in "${!PATCHES[@]}"; do
+        patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
         git am "$WORKDIR/r_patch/Patches/LineageOS-17.1/$patch_file"
         cd "$WORKDIR"
     done
-    rm -rf r_patch
 }
 
 build_src() {
@@ -41,8 +41,9 @@ build_src() {
     [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     set_ccache_vars
-    brunch RMX2185 user
+    brunch RMX2185 user # & sleep 90m; kill %1
 }
+
 
 upload_src() {
     upSrc="out/target/product/*/*-RMX*.zip"

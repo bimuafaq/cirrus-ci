@@ -1,31 +1,23 @@
 #!/usr/bin/env bash
 set -e
 
-export KBUILD_BUILD_USER=android
-export KBUILD_BUILD_HOST=localhost
-export BUILD_USERNAME=android
-export BUILD_HOSTNAME=localhost
-
 CI_DIR=$PWD
 WORKDIR=$CI_DIR/android
 
 _nfy_script() {
-   tle -t "${CIRRUS_COMMIT_MESSAGE} ( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>$CIRRUS_BRANCH</a> )"
+    tle -t "${CIRRUS_COMMIT_MESSAGE} ( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>$CIRRUS_BRANCH</a> )"
     echo "$credensial" > ~/.git-credentials
     echo "$gitconfigs" > ~/.gitconfig
 }
 
 retry_rc() {
-    local -r max_retries=20
-    local -r delay=5
+    local max_retries=20
+    local delay=5
     local attempt=1
+    
     while [[ $attempt -le $max_retries ]]; do
-        if "$@"; then
-            return 0
-        fi
-        if [[ $attempt -lt $max_retries ]]; then
-            sleep "$delay"
-        fi
+        "$@" && return 0
+        [[ $attempt -lt $max_retries ]] && sleep "$delay"
         ((attempt++))
     done
     return 1
@@ -33,7 +25,8 @@ retry_rc() {
 
 copy_cache() {
     mkdir -p ~/.ccache
-    cd ~/ && \
+    cd ~/
+    
     if retry_rc rclone copy "$rclonedir/$rclonefile" . --progress; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
@@ -51,16 +44,15 @@ save_cache() {
     ccache --cleanup
     ccache --zero-stats
     
-    cd ~/ && \
-    if ! tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed; then
+    cd ~/
+    tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed || {
         tle -t "Failed to create cache archive"
         return 1
-    fi
+    }
 
     if retry_rc rclone copy "$rclonefile" "$rclonedir" --progress; then
         rm -f "$rclonefile"
         tle -t "Ccache Save Completed!"
-        return 0
     else
         tle -t "Failed to copy cache to remote"
         return 1
@@ -76,24 +68,19 @@ set_ccache_vars() {
 }
 
 unset_ccache_vars() {
-    unset USE_CCACHE
-    unset CCACHE_EXEC
-    unset CCACHE_DIR
-    unset USE_GOMA
+    unset USE_CCACHE CCACHE_EXEC CCACHE_DIR USE_GOMA
 }
 
 set_rbeenv_vars() {
     git clone -q https://github.com/rovars/reclient reclient
-
     unset_ccache_vars   
-
+    
     export USE_RBE=1
     export RBE_DIR="reclient"
-
     export RBE_instance="rovars.buildbuddy.io"
     export RBE_service="rovars.buildbuddy.io:443"
     export RBE_remote_headers="x-buildbuddy-api-key=yaDX7CznLv0XcEqk0wee"
-
+    
     export RBE_R8_EXEC_STRATEGY=remote_local_fallback
     export RBE_CXX_EXEC_STRATEGY=remote_local_fallback
     export RBE_D8_EXEC_STRATEGY=remote_local_fallback
@@ -108,66 +95,41 @@ set_rbeenv_vars() {
     export RBE_METALAVA_EXEC_STRATEGY=remote_local_fallback
     export RBE_LINT_EXEC_STRATEGY=remote_local_fallback
     export RBE_ABI_DUMPER_EXEC_STRATEGY=""
-
-    export RBE_JAVAC=1
-    export RBE_R8=1
-    export RBE_D8=1
-    export RBE_JAR=1
-    export RBE_ZIP=1
-    export RBE_TURBINE=1
-    export RBE_SIGNAPK=1
-    export RBE_CXX_LINKS=1
-    export RBE_CXX=1
-    export RBE_ABI_LINKER=1
-    export RBE_ABI_DUMPER=""
-    export RBE_CLANG_TIDY=1
-    export RBE_METALAVA=1
-    export RBE_LINT=1
-
-    export RBE_JAVA_POOL=default
-    export RBE_METALAVA_POOL=default
-    export RBE_LINT_POOL=default
-
-    export RBE_log_dir="/tmp"
-    export RBE_output_dir="/tmp"
-    export RBE_proxy_log_dir="/tmp"
-
-    export RBE_service_no_auth=true
-    export RBE_use_rpc_credentials=false
-    export RBE_use_unified_cas_ops=true
-    export RBE_use_unified_downloads=true
-    export RBE_use_unified_uploads=true
-    export RBE_use_application_default_credentials=true
+    
+    export RBE_JAVAC=1 RBE_R8=1 RBE_D8=1 RBE_JAR=1 RBE_ZIP=1
+    export RBE_TURBINE=1 RBE_SIGNAPK=1 RBE_CXX_LINKS=1 RBE_CXX=1
+    export RBE_ABI_LINKER=1 RBE_CLANG_TIDY=1 RBE_METALAVA=1 RBE_LINT=1 RBE_ABI_DUMPER=""
+    
+    export RBE_JAVA_POOL=default RBE_METALAVA_POOL=default RBE_LINT_POOL=default
+    export RBE_log_dir="/tmp" RBE_output_dir="/tmp" RBE_proxy_log_dir="/tmp"
+    export RBE_service_no_auth=true RBE_use_rpc_credentials=false
+    export RBE_use_unified_cas_ops=true RBE_use_unified_downloads=true
+    export RBE_use_unified_uploads=true RBE_use_application_default_credentials=true
 }
 
 rbe_metrics() {
-   tle -f /tmp/rbe_metrics.txt
-   cat /tmp/rbe_metrics.txt
+    tle -f /tmp/rbe_metrics.txt
+    cat /tmp/rbe_metrics.txt
 }
 
 main() {
     mkdir -p "$WORKDIR"
     cd "$WORKDIR"
+    
     case "${1:-}" in
-        sync)   
-            _nfy_script
-            setup_src;;
-        build)  
-            build_src;;
-        upload) 
-            upload_src;;
-        copy_cache) 
-            copy_cache;;
-        save_cache) 
-            save_cache;;
-        results) 
-            rbe_metrics;;
+        sync) _nfy_script; setup_src ;;
+        build) build_src ;;
+        upload) upload_src ;;
+        copy_cache) copy_cache ;;
+        save_cache) save_cache ;;
+        results) rbe_metrics ;;
         *)
             echo "Error: Invalid argument." >&2
-            echo "Usage: $0 {sync|build|upload|copy_cache|save_cache}" >&2
-            exit 1;;
+            echo "Usage: $0 {sync|build|upload|copy_cache|save_cache|results}" >&2
+            exit 1
+            ;;
     esac
 }
 
-source $CI_DIR/build.sh
+source "$CI_DIR/build.sh"
 main "$@"

@@ -24,6 +24,9 @@ setup_src() {
         ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
     )
 
+    rm -rf frameworks/base
+    git --depth=1 clone https://github.com/querror/android_frameworks_base -b lineage-17.1-q frameworks/base
+
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit

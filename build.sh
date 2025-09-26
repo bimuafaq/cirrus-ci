@@ -38,7 +38,7 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     export PRODUCT_DISABLE_SCUDO=true
-    export LINEAGE_EXTRAVERSION=-signed
+    export TARGET_UNOFFICIAL_BUILD_ID=signed
     export OWN_KEYS_DIR=$WORKDIR/romx/A10/keys
 
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

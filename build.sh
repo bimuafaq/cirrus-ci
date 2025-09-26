@@ -25,7 +25,7 @@ setup_src() {
     )
 
     rm -rf frameworks/base
-    git --depth=1 clone https://github.com/querror/android_frameworks_base -b lineage-17.1-q frameworks/base
+    git clone https://github.com/querror/android_frameworks_base -b lineage-17.1-q --depth=1 frameworks/base
 
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
@@ -38,6 +38,7 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     export PRODUCT_DISABLE_SCUDO=true
+    export LINEAGE_EXTRAVERSION=-signed
     export OWN_KEYS_DIR=$WORKDIR/romx/A10/keys
 
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

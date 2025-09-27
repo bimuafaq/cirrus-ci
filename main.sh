@@ -27,11 +27,10 @@ copy_cache() {
     
     if retry_rc rclone copy "$rclonedir/$rclonefile" . --progress; then
         tar -xzf "$rclonefile" -C .
-        rm -f "$rclonefile"
-        tle -t "Cache copied and extracted successfully"
+        rm -f "$rclonefile"       
     else
         rm -f "$rclonefile"
-        tle -t "Cache not found on remote, proceeding without cache"
+        xc -x "no remote ccache!"
     fi
 }
 

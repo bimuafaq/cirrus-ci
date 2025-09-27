@@ -2,12 +2,6 @@
 set -e
 source "$PWD/build.sh"
 
-_nfy_script() {
-    tle -t "${CIRRUS_COMMIT_MESSAGE} ( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>$CIRRUS_BRANCH</a> )"
-    echo "$credensial" > ~/.git-credentials
-    echo "$gitconfigs" > ~/.gitconfig
-}
-
 retry_rc() {
     local max_retries=20
     local delay=5
@@ -42,14 +36,14 @@ save_cache() {
 
     cd ~/
     tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed || {
-        tle -t "Failed to create cache archive"
+        xc -x "Failed to create cache archive"
         return 1
     }
 
     if retry_rc rclone copy "$rclonefile" "$rclonedir" --progress; then
         rm -f "$rclonefile"
     else
-        tle -t "Failed to copy cache to remote"
+        xc -x "Failed to copy cache to remote"
         return 1
     fi
 }
@@ -69,7 +63,7 @@ unset_ccache_vars() {
 main() {
     cd "$SRC_DIR"
     case "${1:-}" in
-        sync) _nfy_script; setup_src ;;
+        sync) setup_src ;;
         build) build_src ;;
         upload) upload_src ;;
         copy_cache) copy_cache ;;

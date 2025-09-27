@@ -3,6 +3,8 @@
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
+    chmod +x romx/A10/keys.sh
+    source romx/A10/keys.sh
     git clone -q https://github.com/rovars/build r_patch
 
     mkdir -p .repo/local_manifests/
@@ -30,16 +32,17 @@ setup_src() {
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
-        git am "$WORKDIR/r_patch/Patches/LineageOS-17.1/$patch_file"
-        cd "$WORKDIR"
+        git am "$SRC_DIR/r_patch/Patches/LineageOS-17.1/$patch_file"
+        cd "$SRC_DIR"
     done
+
 }
 
 build_src() {
     source build/envsetup.sh
     export PRODUCT_DISABLE_SCUDO=true
     export RELEASE_TYPE=signed
-    export OWN_KEYS_DIR=$WORKDIR/romx/A10/keys
+    export OWN_KEYS_DIR=$SRC_DIR/romx/A10/keys
 
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem

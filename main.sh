@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-source "$CI_DIR/build.sh"
+source "$PWD/build.sh"
 
 _nfy_script() {
     tle -t "${CIRRUS_COMMIT_MESSAGE} ( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>$CIRRUS_BRANCH</a> )"

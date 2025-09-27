@@ -2,13 +2,11 @@
 
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
-    git clone -q https://github.com/rovars/rom romx
-    chmod +x romx/A10/keys.sh
-    source romx/A10/keys.sh
-    git clone -q https://github.com/rovars/build r_patch
+    git clone -q https://github.com/rovars/rom romx    
+    git clone -q https://github.com/rovars/build x_patch
 
     mkdir -p .repo/local_manifests/
-    mv romx/A10/remove.xml .repo/local_manifests/roomservice.xml
+    mv romx/A10/device.xml .repo/local_manifests/roomservice.xml
 
     repo sync -j16 -c --force-sync --no-clone-bundle --no-tags --prune
 
@@ -26,13 +24,10 @@ setup_src() {
         ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
     )
 
-    rm -rf frameworks/base
-    git clone https://github.com/querror/android_frameworks_base -b lineage-17.1-q --depth=1 frameworks/base
-
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
-        git am "$SRC_DIR/r_patch/Patches/LineageOS-17.1/$patch_file"
+        git am "$SRC_DIR/x_patch/Patches/LineageOS-17.1/$patch_file"
         cd "$SRC_DIR"
     done
 
@@ -42,7 +37,7 @@ build_src() {
     source build/envsetup.sh
     export PRODUCT_DISABLE_SCUDO=true
     export RELEASE_TYPE=signed
-    export OWN_KEYS_DIR=$SRC_DIR/romx/A10/keys
+    export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem

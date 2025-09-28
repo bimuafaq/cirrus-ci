@@ -7,7 +7,7 @@ set_ccache_vars() {
     export CCACHE_EXEC="$(command -v ccache)"
     export CCACHE_DIR="$HOME/.ccache"
     ccache -M 50G -F 0
-    ccache -o compression=true
+    # ccache -o compression=true
 }
 
 retry_rc() {

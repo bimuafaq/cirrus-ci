@@ -30,22 +30,17 @@ setup_src() {
         git am "$SRC_DIR/x_patch/Patches/LineageOS-17.1/$patch_file"
         cd "$SRC_DIR"
     done
-
-   ls build/make
-
 }
 
 build_src() {
     source build/envsetup.sh
-    export PRODUCT_DISABLE_SCUDO=true
-    export RELEASE_TYPE=signed
+    export RELEASE_TYPE=UL
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-    # set_ccache_vars
-    set_remote_vars
+    set_ccache_vars
     brunch RMX2185 user # & sleep 90m; kill %1
 }
 

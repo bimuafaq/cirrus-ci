@@ -2,7 +2,8 @@
 
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
-    git clone -q https://github.com/rovars/rom romx    
+    git clone -q https://github.com/rovars/rom romx
+    source romx/script/nun 
     git clone -q https://github.com/rovars/build x_patch
 
     mkdir -p .repo/local_manifests/

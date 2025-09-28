@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -e
+
+export USE_DEX2OAT_DEBUG=false
+export WITH_DEXPREOPT_DEBUG_INFO=false
+export NINJA_HIGHMEM_NUM_JOBS=1
+
 source "$PWD/build.sh"
 
 set_ccache_vars() {

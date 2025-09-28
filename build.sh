@@ -3,7 +3,6 @@
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
-    source romx/script/nun 
     git clone -q https://github.com/rovars/build x_patch
 
     mkdir -p .repo/local_manifests/
@@ -35,7 +34,7 @@ setup_src() {
 
 build_src() {
     source build/envsetup.sh
-    export RELEASE_TYPE=UL
+    export RELEASE_TYPE=FE
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

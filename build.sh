@@ -6,7 +6,7 @@ setup_src() {
     git clone -q https://github.com/rovars/build x_patch
 
     mkdir -p .repo/local_manifests/
-    mv romx/A10/device.xml .repo/local_manifests/roomservice.xml
+    mv romx/manifest/lin10.xml .repo/local_manifests/roomservice.xml
 
     repo sync -j16 -c --force-sync --no-clone-bundle --no-tags --prune
 
@@ -31,6 +31,8 @@ setup_src() {
         cd "$SRC_DIR"
     done
 
+   ls build/make
+
 }
 
 build_src() {
@@ -42,7 +44,8 @@ build_src() {
     [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-    set_ccache_vars
+    # set_ccache_vars
+    set_remote_vars
     brunch RMX2185 user # & sleep 90m; kill %1
 }
 

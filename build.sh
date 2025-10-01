@@ -5,7 +5,7 @@ setup_src() {
 
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
-    git clone -q https://github.com/rovars/build x_patch
+    git clone -q https://github.com/rovars/build npatch
 
     mkdir -p .repo/local_manifests/
     mv romx/manifest/lin10.xml .repo/local_manifests/roomservice.xml
@@ -29,7 +29,7 @@ setup_src() {
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
-        git am "$SRC_DIR/x_patch/Patches/LineageOS-17.1/$patch_file"
+        git am "$SRC_DIR/npatch/Patches/LineageOS-17.1/$patch_file"
         cd "$SRC_DIR"
     done
 }

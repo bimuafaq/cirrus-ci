@@ -34,9 +34,11 @@ copy_cache() {
     if retry_rc rclone copy "$rclonedir/$rclonefile" .; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
+        echo "setup ccache done!"
     else
         rm -f "$rclonefile"
-        xc -x "no remote ccache!"
+        echo "no ccache? skip"
+        xc -x "no ccache? skip"
     fi
 }
 
@@ -87,20 +89,10 @@ export RBE_METALAVA_EXEC_STRATEGY=remote_local_fallback
 export RBE_LINT_EXEC_STRATEGY=remote_local_fallback
 export RBE_ABI_DUMPER_EXEC_STRATEGY=""
 
-export RBE_JAVAC=1
-export RBE_R8=1
-export RBE_D8=1
-export RBE_JAR=1
-export RBE_ZIP=1
-export RBE_TURBINE=1
-export RBE_SIGNAPK=1
-export RBE_CXX_LINKS=1
-export RBE_CXX=1
-export RBE_ABI_LINKER=1
-export RBE_CLANG_TIDY=1
-export RBE_METALAVA=1
-export RBE_LINT=1
-export RBE_ABI_DUMPER=""
+export RBE_JAVAC=1 RBE_R8=1 RBE_D8=1 RBE_JAR=1
+export RBE_ZIP=1 RBE_TURBINE=1 RBE_SIGNAPK=1 
+export RBE_CXX_LINKS=1 RBE_CXX=1 RBE_ABI_LINKER=1 RBE_CLANG_TIDY=1
+export RBE_METALAVA=1 RBE_LINT=1 RBE_ABI_DUMPER=""
 
 export RBE_JAVA_POOL=default
 export RBE_METALAVA_POOL=default
@@ -114,6 +106,7 @@ export RBE_use_unified_cas_ops=true
 export RBE_use_unified_downloads=true
 export RBE_use_unified_uploads=true
 export RBE_use_application_default_credentials=true
+    echo "(RBE) setup done!"
 }
 
 main() {

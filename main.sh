@@ -31,7 +31,7 @@ copy_cache() {
     mkdir -p ~/.ccache
     cd ~/
     set_ccache_vars
-    if retry_rc rclone copy "$rclonedir/$rclonefile" .; then
+    if retry_rc rclone copy "$rclonedir/$rclonefile". &> /dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
         echo "setup ccache done!"
@@ -50,14 +50,16 @@ save_cache() {
 
     cd ~/
     tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed || {
-        xc -x "Failed to create cache archive"
+        xc -x "create ccache archive failure!"
         return 1
     }
 
-    if retry_rc rclone copy "$rclonefile" "$rclonedir"; then
+    if retry_rc rclone copy "$rclonefile" "$rclonedir" &> /dev/null; then
         rm -f "$rclonefile"
+        echo "ccache save done!"
     else
-        xc -x "Failed to copy cache to remote"
+        echo "ccache not save!"
+        xc -x "ccache not save!"
         return 1
     fi
 }

@@ -34,21 +34,24 @@ setup_src() {
 
 build_src() {
     source build/envsetup.sh
+    export KBUILD_BUILD_USER=nobody
+    export KBUILD_BUILD_HOST=android-build
+    export BUILD_USERNAME=nobody
+    export BUILD_HOSTNAME=android-build
     export RELEASE_TYPE=FE
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
-    [ ! -e $OWN_KEYS_DIR/testkey.pk8 ] && ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
-    [ ! -e $OWN_KEYS_DIR/testkey.x509.pem ] && ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
+    ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
+    ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     set_ccache_vars
-    brunch RMX2185 user # & sleep 90m; kill %1
+    brunch RMX2185 user
 }
 
 
 upload_src() {
     upSrc="out/target/product/*/*-RMX*.zip"
     mkdir -p ~/.config && mv romx/config/* ~/.config || true
-    curl bashupload.com -T $upSrc || true
     timeout 15m telegram-upload $upSrc --caption "${CIRRUS_COMMIT_MESSAGE}" --to $idtl || true
     save_cache
 }

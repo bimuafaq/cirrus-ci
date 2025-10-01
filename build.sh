@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    copy_cache
-
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
     git clone -q https://github.com/rovars/build npatch
@@ -55,5 +53,4 @@ upload_src() {
     upSrc="out/target/product/*/*-RMX*.zip"
     mkdir -p ~/.config && mv romx/config/* ~/.config || true
     timeout 15m telegram-upload $upSrc --caption "${CIRRUS_COMMIT_MESSAGE}" --to $idtl || true
-    save_cache
 }

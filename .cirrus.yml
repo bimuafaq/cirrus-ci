@@ -21,9 +21,13 @@ task:
     - echo "$credensial" > ~/.git-credentials
     - echo "$gitconfigs" > ~/.gitconfig
     - echo "$rcloneconfig" > ~/.rclone.conf
+    - ./main.sh copy_cache
     - ./main.sh sync
-  build_script: ./main.sh build
-  upload_script: ./main.sh upload
+  build_script: 
+    - ./main.sh build
+  upload_script:
+    - ./main.sh upload
+    - ./main.sh save_cache
 
   on_failure:
     notiferror_script:

@@ -31,7 +31,7 @@ copy_cache() {
     mkdir -p ~/.ccache
     cd ~/
     set_ccache_vars
-    if retry_rc rclone copy "$rclonedir/$rclonefile" . --progress; then
+    if retry_rc rclone copy "$rclonedir/$rclonefile" .; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
     else
@@ -52,7 +52,7 @@ save_cache() {
         return 1
     }
 
-    if retry_rc rclone copy "$rclonefile" "$rclonedir" --progress; then
+    if retry_rc rclone copy "$rclonefile" "$rclonedir"; then
         rm -f "$rclonefile"
     else
         xc -x "Failed to copy cache to remote"

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 setup_src() {
+    copy_cache
+
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
     git clone -q https://github.com/rovars/build x_patch

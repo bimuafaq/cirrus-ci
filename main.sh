@@ -31,7 +31,7 @@ copy_cache() {
     mkdir -p ~/.ccache
     cd ~/
     set_ccache_vars
-    if retry_rc rclone copy "$rclonedir/$rclonefile". &> /dev/null; then
+    if retry_rc rclone copy "$rclonedir/$rclonefile" . &> /dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
         echo "setup ccache done!"

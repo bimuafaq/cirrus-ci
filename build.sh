@@ -39,6 +39,7 @@ build_src() {
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
     export RELEASE_TYPE=FE
+    export EXCLUDE_SYSTEMUI_TESTS=true
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

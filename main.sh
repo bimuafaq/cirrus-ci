@@ -5,6 +5,7 @@ export USE_DEX2OAT_DEBUG=false
 export WITH_DEXPREOPT_DEBUG_INFO=false
 export NINJA_HIGHMEM_NUM_JOBS=1
 export DISABLE_ROBO_RUN_TESTS=true
+export TZ=Asia/Jakarta
 
 source "$PWD/build.sh"
 

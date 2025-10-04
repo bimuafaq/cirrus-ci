@@ -4,12 +4,11 @@ setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
     git clone -q https://github.com/rovars/build npatch
-
-    sudo find / -name mke2fs.conf
-    sudo chmod 777 /etc/mke2fs.conf
+    
+    chmod 777 /etc/mke2fs.conf
     cat /etc/mke2fs.conf
     sed -s 's/,metadata_csum_seed//g' /etc/mke2fs.conf | sed -s 's/,orphan_file//g' > /tmp/mke2fs.conf
-    sudo mv /tmp/mke2fs.conf /etc/mke2fs.conf
+    mv /tmp/mke2fs.conf /etc/mke2fs.conf
     exit 1
 
     mkdir -p .repo/local_manifests/

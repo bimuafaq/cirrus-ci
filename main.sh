@@ -36,8 +36,8 @@ copy_cache() {
     if retry_rc rclone copy "$rclonedir/$rclonefile" . &> /dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
-        echo "===== ccache setup done ====="
-        xc -x "===== ccache setup done ====="
+        echo "===== use ccache done ====="
+        xc -x "===== use ccache done ====="
     else
         rm -f "$rclonefile"
         echo "===== no ccache? ah skip ====="
@@ -59,11 +59,11 @@ save_cache() {
 
     if retry_rc rclone copy "$rclonefile" "$rclonedir" &> /dev/null; then
         rm -f "$rclonefile"
-        echo "===== ccache copy done ====="
-        xc -x "===== ccache copy done ====="
+        echo "===== ccache save done ====="
+        xc -x "===== ccache save done ====="
     else
-        echo "===== ccache copy failed! ====="
-        xc -x "===== ccache copy failed! ====="
+        echo "===== ccache save not done ====="
+        xc -x "===== ccache save not done ====="
         return 1
     fi
 }

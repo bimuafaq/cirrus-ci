@@ -17,8 +17,8 @@ set_ccache_vars() {
 }
 
 retry_rc() {
-    local max_retries=20
-    local delay=5
+    local max_retries=10
+    local delay=2
     local attempt=1
     
     while [[ $attempt -le $max_retries ]]; do

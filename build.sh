@@ -57,7 +57,7 @@ upload_src() {
     TITLE="lineage-17.1"
     OUTDIR="out/target/product/*/*-RMX*.zip"
     
-    echo "$GH_TOKEN" > mytoken.txt
+    echo "$tokenpat" > mytoken.txt
     gh auth login --with-token < mytoken.txt
 
     ROM_FILE=""

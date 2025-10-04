@@ -4,12 +4,6 @@ setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
     git clone -q https://github.com/rovars/build npatch
-    
-    chmod 777 /etc/mke2fs.conf
-    cat /etc/mke2fs.conf
-    sed -s 's/,metadata_csum_seed//g' /etc/mke2fs.conf | sed -s 's/,orphan_file//g' > /tmp/mke2fs.conf
-    mv /tmp/mke2fs.conf /etc/mke2fs.conf
-    exit 1
 
     mkdir -p .repo/local_manifests/
     mv romx/script/rom/lin10.xml .repo/local_manifests/roomservice.xml
@@ -50,6 +44,10 @@ build_src() {
 
     ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
+
+    chmod 777 /etc/mke2fs.conf
+    sed -s 's/,metadata_csum_seed//g' /etc/mke2fs.conf | sed -s 's/,orphan_file//g' > /tmp/mke2fs.conf
+    mv /tmp/mke2fs.conf /etc/mke2fs.conf
 
     set_ccache_vars
     brunch RMX2185 user

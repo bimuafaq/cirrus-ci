@@ -36,11 +36,11 @@ copy_cache() {
     if retry_rc rclone copy "$rclonedir/$rclonefile" . &> /dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
-        echo "setup ccache done!"
+        echo " ===== setup ccache done! ===== "
     else
         rm -f "$rclonefile"
-        echo "no ccache? skip"
-        xc -x "no ccache? skip"
+        echo " ===== no ccache? ah skip ===== "
+        xc -x "no ccache? ah skip"
     fi
 }
 
@@ -58,10 +58,10 @@ save_cache() {
 
     if retry_rc rclone copy "$rclonefile" "$rclonedir" &> /dev/null; then
         rm -f "$rclonefile"
-        echo "ccache save done!"
+        echo " ===== ccache save done! ===== "
     else
-        echo "ccache not save!"
-        xc -x "ccache not save!"
+        echo " ===== ccache not save! ===== "
+        xc -x "ccache not save :v"
         return 1
     fi
 }
@@ -87,6 +87,8 @@ set_remote_vars() {
 }
 
 main() {
+    export SRC_DIR=$PWD/src
+    mkdir -p $SRC_DIR
     cd "$SRC_DIR"
     case "${1:-}" in
         sync) setup_src ;;

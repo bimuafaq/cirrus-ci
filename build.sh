@@ -5,6 +5,13 @@ setup_src() {
     git clone -q https://github.com/rovars/rom romx
     git clone -q https://github.com/rovars/build npatch
 
+    sudo find / -name mke2fs.conf
+    sudo chmod 777 /etc/mke2fs.conf
+    cat /etc/mke2fs.conf
+    sed -s 's/,metadata_csum_seed//g' /etc/mke2fs.conf | sed -s 's/,orphan_file//g' > /tmp/mke2fs.conf
+    sudo mv /tmp/mke2fs.conf /etc/mke2fs.conf
+    exit 1
+
     mkdir -p .repo/local_manifests/
     mv romx/script/rom/lin10.xml .repo/local_manifests/roomservice.xml
 

@@ -51,31 +51,21 @@ build_src() {
 }
 
 upload_src() {
-    REPO="rovars/release"
+    REPO="rovars/vars"
     RELEASE_TAG="lineage-17.1"
-    NOTES="lineage-17.1"
-    TITLE="lineage-17.1"
-    OUTDIR="out/target/product/*/*-RMX*.zip"
-    
-    echo "$tokenpat" > mytoken.txt
-    gh auth login --with-token < mytoken.txt
+    ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
+    ROM_X="https://github.com/$REPO/releases/download/$RELEASE_TAG/$(basename "$ROM_FILE")"
 
-    ROM_FILE=""
-    for file in $OUTDIR; do
-        if [ -f "$file" ]; then
-            ROM_FILE="$file"
-            break
-        fi
-    done
+    echo "$tokenpat" > tokenpat.txt
+    gh auth login --with-token < tokenpat.txt
 
-    if [ -z "$ROM_FILE" ]; then
-        echo "Error: ROM file not found."
-        exit 1
+    if ! gh release view "$RELEASE_TAG" -R "$REPO" > /dev/null 2>&1; then
+        gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
     fi
 
-    if ! gh release view "$RELEASE_TAG" --repo "$REPO" > /dev/null 2>&1; then
-        gh release create "$RELEASE_TAG" --title "$TITLE" --notes "$NOTES" --repo "$REPO"
-    fi
+    gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber
 
-    gh release upload "$PRERELEASE_TAG" "$ROM_FILE" --clobber --repo "$REPO"
+    echo "Release Upload: $ROM_X"
+    xc -x "${CIRRUS_COMMIT_MESSAGE}
+( <a href='$ROM_X'>$(basename "$ROM_FILE")</a> )"
 }

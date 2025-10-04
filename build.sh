@@ -6,7 +6,7 @@ setup_src() {
     git clone -q https://github.com/rovars/build npatch
 
     mkdir -p .repo/local_manifests/
-    mv romx/manifest/lin10.xml .repo/local_manifests/roomservice.xml
+    mv romx/script/rom/lin10.xml .repo/local_manifests/roomservice.xml
 
     repo sync -j16 -c --force-sync --no-clone-bundle --no-tags --prune
 
@@ -49,9 +49,7 @@ build_src() {
     brunch RMX2185 user
 }
 
-
 upload_src() {
-    upSrc="out/target/product/*/*-RMX*.zip"
-    mkdir -p ~/.config && mv romx/config/* ~/.config || true
-    timeout 15m telegram-upload $upSrc --caption "${CIRRUS_COMMIT_MESSAGE}" --to $idtl || true
+    outdir="out/target/product/*/*-RMX*.zip"
+    echo "$outdir"
 }

@@ -5,7 +5,6 @@ export USE_DEX2OAT_DEBUG=false
 export WITH_DEXPREOPT_DEBUG_INFO=false
 export NINJA_HIGHMEM_NUM_JOBS=1
 export DISABLE_ROBO_RUN_TESTS=true
-export TZ=Asia/Jakarta
 
 source "$PWD/build.sh"
 
@@ -13,8 +12,8 @@ set_ccache_vars() {
     export USE_CCACHE=1
     export CCACHE_EXEC="$(command -v ccache)"
     export CCACHE_DIR="$HOME/.ccache"
-    ccache -M 50G -F 0
-    ccache -o compression=true
+    ccache -M 50G -F 0 &> /dev/null
+    ccache -o compression=true &> /dev/null
 }
 
 retry_rc() {

@@ -36,11 +36,12 @@ copy_cache() {
     if retry_rc rclone copy "$rclonedir/$rclonefile" . &> /dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
-        echo "===== setup ccache done! ====="
+        echo "===== ccache setup done ====="
+        xc -x "===== ccache setup done ====="
     else
         rm -f "$rclonefile"
         echo "===== no ccache? ah skip ====="
-        xc -x "no ccache? ah skip"
+        xc -x "===== no ccache? ah skip ====="
     fi
 }
 
@@ -58,10 +59,11 @@ save_cache() {
 
     if retry_rc rclone copy "$rclonefile" "$rclonedir" &> /dev/null; then
         rm -f "$rclonefile"
-        echo "===== ccache save done! ====="
+        echo "===== ccache copy done ====="
+        xc -x "===== ccache copy done ====="
     else
-        echo "===== ccache not save! ====="
-        xc -x "ccache not save :v"
+        echo "===== ccache copy failed! ====="
+        xc -x "===== ccache copy failed! ====="
         return 1
     fi
 }
@@ -83,7 +85,7 @@ set_remote_vars() {
     export RBE_service_no_auth=true RBE_use_rpc_credentials=false RBE_use_unified_cas_ops=true RBE_use_unified_downloads=true
     export RBE_use_unified_uploads=true RBE_use_application_default_credentials=true
 
-    echo "(RBE) setup done!"
+    echo "===== Remote Build Execution ====="
 }
 
 main() {

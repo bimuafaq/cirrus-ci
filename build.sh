@@ -34,26 +34,48 @@ setup_src() {
 
 build_src() {
     source build/envsetup.sh
+    set_ccache_vars
+
     export KBUILD_BUILD_USER=nobody
     export KBUILD_BUILD_HOST=android-build
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
-    export RELEASE_TYPE=FE
+    export RELEASE_TYPE=UNOFFICIAL-signed
     export EXCLUDE_SYSTEMUI_TESTS=true
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-    chmod 777 /etc/mke2fs.conf
-    sed -s 's/,metadata_csum_seed//g' /etc/mke2fs.conf | sed -s 's/,orphan_file//g' > /tmp/mke2fs.conf
-    mv /tmp/mke2fs.conf /etc/mke2fs.conf
-
-    set_ccache_vars
     brunch RMX2185 user
 }
 
 upload_src() {
-    outdir="out/target/product/*/*-RMX*.zip"
-    echo "$outdir"
+    REPO="rovars/release"
+    RELEASE_TAG="lineage-17.1"
+    NOTES="lineage-17.1"
+    TITLE="lineage-17.1"
+    OUTDIR="out/target/product/*/*-RMX*.zip"
+    
+    echo "$GH_TOKEN" > mytoken.txt
+    gh auth login --with-token < mytoken.txt
+
+    ROM_FILE=""
+    for file in $OUTDIR; do
+        if [ -f "$file" ]; then
+            ROM_FILE="$file"
+            break
+        fi
+    done
+
+    if [ -z "$ROM_FILE" ]; then
+        echo "Error: ROM file not found."
+        exit 1
+    fi
+
+    if ! gh release view "$RELEASE_TAG" --repo "$REPO" > /dev/null 2>&1; then
+        gh release create "$RELEASE_TAG" --title "$TITLE" --notes "$NOTES" --repo "$REPO"
+    fi
+
+    gh release upload "$PRERELEASE_TAG" "$ROM_FILE" --clobber --repo "$REPO"
 }

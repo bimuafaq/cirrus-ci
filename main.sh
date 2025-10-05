@@ -29,7 +29,7 @@ retry_rc() {
     return 1
 }
 
-copy_cache() {
+setup_cache() {
     mkdir -p ~/.ccache
     cd ~/
     set_ccache_vars
@@ -43,6 +43,7 @@ copy_cache() {
         echo "===== no ccache? ah skip ====="
         xc -s2 "===== no ccache? ah skip ====="
     fi
+    cd $SRC_DIR
 }
 
 save_cache() {
@@ -66,6 +67,7 @@ save_cache() {
         xc -s2 "===== ccache save not done ====="
         return 1
     fi
+    cd $SRC_DIR
 }
 
 set_remote_vars() {
@@ -97,7 +99,7 @@ main() {
               setup_src ;;
         build) build_src ;;
         upload) upload_src ;;
-        copy_cache) copy_cache ;;
+        setup_cache) setup_cache ;;
         save_cache) save_cache ;;
         *)
             echo "Error: Invalid argument." >&2

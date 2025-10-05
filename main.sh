@@ -93,7 +93,8 @@ main() {
     mkdir -p $SRC_DIR
     cd "$SRC_DIR"
     case "${1:-}" in
-        sync) setup_src ;;
+        sync) xc -s "( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( $CIRRUS_BRANCH )"
+              setup_src ;;
         build) build_src ;;
         upload) upload_src ;;
         copy_cache) copy_cache ;;

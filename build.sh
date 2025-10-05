@@ -65,7 +65,6 @@ upload_src() {
 
     gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber
 
-    echo "Release Upload: $ROM_X"
-    xc -x "${CIRRUS_COMMIT_MESSAGE}
-( <a href='$ROM_X'>$(basename "$ROM_FILE")</a> )"
+    echo "$ROM_X"
+    xc -s "( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
 }

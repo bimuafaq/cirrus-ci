@@ -36,8 +36,8 @@ setup_cache() {
     if retry_rc rclone copy "$rclonedir/$rclonefile" . &> /dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
-        echo "===== use ccache done ====="
-        xc -s2 "===== use ccache done ====="
+        echo "===== ccache setup done ====="
+        xc -s2 "===== ccache setup done ====="
     else
         rm -f "$rclonefile"
         echo "===== no ccache? ah skip ====="
@@ -49,8 +49,8 @@ setup_cache() {
 save_cache() {
     export CCACHE_DISABLE=1
     ccache -s    
-    ccache --cleanup
-    ccache --zero-stats
+    ccache --cleanup &> /dev/null
+    ccache --zero-stats &> /dev/null
 
     cd ~/
     tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed || {
@@ -60,11 +60,11 @@ save_cache() {
 
     if retry_rc rclone copy "$rclonefile" "$rclonedir" &> /dev/null; then
         rm -f "$rclonefile"
-        echo "===== ccache save done ====="
-        xc -s2 "===== ccache save done ====="
+        echo "===== ccache save success ====="
+        xc -s2 "===== ccache save success ====="
     else
-        echo "===== ccache save not done ====="
-        xc -s2 "===== ccache save not done ====="
+        echo "===== ccache save failure ====="
+        xc -s2 "===== ccache save failure ====="
         return 1
     fi
     cd $SRC_DIR

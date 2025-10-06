@@ -40,8 +40,9 @@ build_src() {
     export KBUILD_BUILD_HOST=android-build
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
-    export RELEASE_TYPE=UNOFFICIAL-signed
+    export RELEASE_TYPE=UNOFFICIAL-signed-test
     export EXCLUDE_SYSTEMUI_TESTS=true
+    export PRODUCT_SYSTEM_SERVER_COMPILER_FILTER=speed-profile
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

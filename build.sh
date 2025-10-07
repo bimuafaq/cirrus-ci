@@ -41,9 +41,8 @@ build_src() {
     export KBUILD_BUILD_HOST=android-build
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
-    export RELEASE_TYPE=UNOFFICIAL-signed-test
+    export RELEASE_TYPE=UNOFFICIAL
     export EXCLUDE_SYSTEMUI_TESTS=true
-    export PRODUCT_SYSTEM_SERVER_COMPILER_FILTER=speed-profile
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
@@ -68,5 +67,10 @@ upload_src() {
     gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber
 
     echo "$ROM_X"
-    save_cache
+    MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
+    xc -s "$MSG_XC2"
+
+    mkdir -p ~/.config
+    mv romx/config/* ~/.config
+    timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
 }

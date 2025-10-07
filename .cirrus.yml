@@ -22,13 +22,10 @@ task:
     - echo "$gitconfigs" > ~/.gitconfig
     - echo "$rcloneconfig" > ~/.rclone.conf
     - ./main.sh sync
-  ccache_script:
-    - ./main.sh setup_cache
   build_script: 
     - ./main.sh build
   upload_script:
     - ./main.sh upload
-    - ./main.sh save_cache
 
   on_failure:
     notiferror_script:

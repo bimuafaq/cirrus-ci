@@ -33,6 +33,7 @@ setup_src() {
 }
 
 build_src() {
+    setup_cache
     source build/envsetup.sh
     set_ccache_vars
 
@@ -67,5 +68,5 @@ upload_src() {
     gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber
 
     echo "$ROM_X"
-    xc -s "( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
+    save_cache
 }

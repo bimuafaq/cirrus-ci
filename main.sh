@@ -6,8 +6,8 @@ export WITH_DEXPREOPT_DEBUG_INFO=false
 export NINJA_HIGHMEM_NUM_JOBS=1
 export DISABLE_ROBO_RUN_TESTS=true
 
-MGS_XC1="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( $CIRRUS_BRANCH )"
-MGS_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
+MSG_XC1="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( $CIRRUS_BRANCH )"
+MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
 
 source "$PWD/build.sh"
 
@@ -23,7 +23,7 @@ retry_rc() {
     local max_retries=10
     local delay=2
     local attempt=1
-    
+
     while [[ $attempt -le $max_retries ]]; do
         "$@" && return 0
         [[ $attempt -lt $max_retries ]] && sleep "$delay"
@@ -40,12 +40,12 @@ setup_cache() {
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
         echo "===== ccache setup done ====="
-        xc -s2 "$MGS_XC1
+        xc -s "$MSG_XC1
 ( ccache setup done )"
     else
         rm -f "$rclonefile"
         echo "===== no ccache? ah skip ====="
-        xc -s2 "$MGS_XC1
+        xc -s "$MSG_XC1
 ( no ccache? ah skip )"
     fi
     cd $SRC_DIR
@@ -66,11 +66,11 @@ save_cache() {
     if retry_rc rclone copy "$rclonefile" "$rclonedir" &> /dev/null; then
         rm -f "$rclonefile"
         echo "===== ccache save success ====="
-        xc -s2 "$MSG_XC2
+        xc -s "$MSG_XC2
 ( ccache save success )"
     else
         echo "===== ccache save failure ====="
-        xc -s2 "$MGS_XC2
+        xc -s "$MSG_XC2
 ( ccache save failure )"
         return 1
     fi
@@ -100,7 +100,7 @@ main() {
     mkdir -p $SRC_DIR
     cd "$SRC_DIR"
     case "${1:-}" in
-        sync) xc -s $MGS_XC1
+        sync) xc -s "$MSG_XC1"
               setup_src ;;
         build) build_src ;;
         upload) upload_src ;;

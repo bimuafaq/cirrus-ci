@@ -5,7 +5,7 @@ setup_src() {
     repo init -u https://github.com/AICP/platform_manifest.git -b s12.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom romx
     mkdir -p .repo/local_manifests
-    mv romx/script/rom/lin12* .repo/local_manifests/
+    mv romx/script/rom/12* .repo/local_manifests/
     retry_rc repo sync -c -j8 --force-sync --no-clone-bundle --no-tags --prune
 
     rm -rf external/chromium-webview
@@ -56,6 +56,11 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     set_remote_vars
+
+    export RBE_CXX_EXEC_STRATEGY="racing"
+    export RBE_JAVAC_EXEC_STRATEGY="racing"
+    export RBE_R8_EXEC_STRATEGY="racing"
+    export RBE_D8_EXEC_STRATEGY="racing"
 
     export SKIP_ABI_CHECKS=true    
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys

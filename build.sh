@@ -26,12 +26,12 @@ setup_src() {
     cd $SRC_DIR
 
     cd packages/apps/Trebuchet
-    git am $zpatch/git am $zpatch/patches_platform/packages_apps_Trebuchet/*
-    git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/*
+    git am $zpatch/git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
+    git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
     cd $SRC_DIR
 
     cd vendor/lineage
-    git am $zpatch/patches_platform/vendor_lineage/*   
+    git am $zpatch/patches_platform/vendor_lineage/0*   
     cd $SRC_DIR
 
     cd system/core
@@ -49,6 +49,11 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     set_remote_vars
+
+    export RBE_CXX_EXEC_STRATEGY="racing"
+    export RBE_JAVAC_EXEC_STRATEGY="racing"
+    export RBE_R8_EXEC_STRATEGY="racing"
+    export RBE_D8_EXEC_STRATEGY="racing"
 
     export SKIP_ABI_CHECKS=true    
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys

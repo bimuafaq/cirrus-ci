@@ -1,33 +1,30 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    repo init -u https://gitlab.e.foundation/e/os/android.git -b v1-s --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom romx
 
     mkdir -p .repo/local_manifests
-    mv romx/script/rom/*12* .repo/local_manifests/
+    mv romx/script/rom/lin12* .repo/local_manifests/
 
     retry_rc repo sync -c -j8 --force-sync --no-clone-bundle --no-tags --prune
 
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
-    cd prebuilts/prebuiltapks
-    git lfs pull
-    rm -rf Browser Notes Mail Camera eDrive
-    cd $SRC_DIR
+    # cd prebuilts/prebuiltapks
+    # git lfs pull
+    # rm -rf Browser Notes Mail Camera eDrive
+    # cd $SRC_DIR
 
     xpatch=$SRC_DIR/romx/script/rom/patch
+    zpatch=$SRC_DIR/romx/script/rom/patch/lin12
 
-    # patch -p1 < $xpatch/lin11-allow-permissive-user-build.patch
     patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch
 
     cd frameworks/base
-    git am $xpatch/lin11-base-Revert-New-activity-transitions.patch 
-    cd $SRC_DIR
-
-    cd vendor/lineage
-    # git am $xpatch/lin11-vendor-*
+    git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
+    git am $zpatch/patches_platform/frameworks_base/0*
     cd $SRC_DIR
 }
 
@@ -49,7 +46,7 @@ build_src() {
 
 upload_src() {
     REPO="rovars/vars"
-    RELEASE_TAG="e/OS"
+    RELEASE_TAG="lineage-19.1"
     ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
     ROM_X="https://github.com/$REPO/releases/download/$RELEASE_TAG/$(basename "$ROM_FILE")"
 

@@ -26,7 +26,7 @@ setup_src() {
     cd $SRC_DIR
 
     cd packages/apps/Trebuchet
-    git am $zpatch/git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
+    git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
     git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
     cd $SRC_DIR
 

@@ -21,10 +21,10 @@ setup_src() {
 
     patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch
 
-    cd frameworks/base
-    git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
-    git am $zpatch/patches_platform/frameworks_base/0*
-    cd $SRC_DIR
+    #cd frameworks/base
+    #git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
+    #git am $zpatch/patches_platform/frameworks_base/0*
+    #cd $SRC_DIR
 
     #cd packages/apps/Trebuchet
     #git am $zpatch/patches_platform/packages_apps_Trebuchet/0*

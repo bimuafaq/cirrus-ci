@@ -3,10 +3,8 @@
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom romx
-
     mkdir -p .repo/local_manifests
     mv romx/script/rom/lin12* .repo/local_manifests/
-
     retry_rc repo sync -c -j8 --force-sync --no-clone-bundle --no-tags --prune
 
     rm -rf external/chromium-webview
@@ -26,6 +24,26 @@ setup_src() {
     git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
     git am $zpatch/patches_platform/frameworks_base/0*
     cd $SRC_DIR
+
+    cd packages/apps/Trebuchet
+    git am $zpatch/git am $zpatch/patches_platform/packages_apps_Trebuchet/*
+    git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/*
+    cd $SRC_DIR
+
+    cd vendor/lineage
+    git am $zpatch/patches_platform/vendor_lineage/*   
+    cd $SRC_DIR
+
+    cd system/core
+    git am $zpatch/patches_treble_phh/platform_system_core/0001*
+    git am $zpatch/patches_treble_phh/platform_system_core/0002*
+    git am $zpatch/patches_treble_phh/platform_system_core/0003*
+    git am $zpatch/patches_treble_phh/platform_system_core/0006*    
+    cd $SRC_DIR
+
+    cd external/selinux
+    git am $zpatch/patches_treble_phh/platform_external_selinux/0002-*
+    cd $SCR_DIR
 }
 
 build_src() {

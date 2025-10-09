@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    # repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    repo init -u https://github.com/AICP/platform_manifest.git -b s12.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom romx
     mkdir -p .repo/local_manifests
     mv romx/script/rom/lin12* .repo/local_manifests/
@@ -25,35 +26,36 @@ setup_src() {
     git am $zpatch/patches_platform/frameworks_base/0*
     cd $SRC_DIR
 
-    cd packages/apps/Trebuchet
-    git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
-    git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
-    cd $SRC_DIR
+    #cd packages/apps/Trebuchet
+    #git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
+    #git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
+    #cd $SRC_DIR
 
-    cd vendor/lineage
-    git am $zpatch/patches_platform/vendor_lineage/0*   
-    cd $SRC_DIR
+    #cd vendor/lineage
+    #git am $zpatch/patches_platform/vendor_lineage/0*   
+    #cd $SRC_DIR
 
     cd system/core
     git am $zpatch/patches_treble_phh/platform_system_core/0001*
     git am $zpatch/patches_treble_phh/platform_system_core/0002*
     git am $zpatch/patches_treble_phh/platform_system_core/0003*
-    git am $zpatch/patches_treble_phh/platform_system_core/0006*    
+    git am $zpatch/patches_treble_phh/platform_system_core/0006*
     cd $SRC_DIR
 
     cd external/selinux
     git am $zpatch/patches_treble_phh/platform_external_selinux/0002-*
     cd $SCR_DIR
+
+    sed -i 's/lineage_/aicp_/g' device/realme/RMX2185/AndroidProducts.mk
+    sed -i 's/lineage_/aicp_/g' device/realme/RMX2185/lineage_RMX2185.mk
+    sed -i 's|$(call inherit-product, vendor/lineage/config/common_full_phone.mk)|$(call inherit-product, vendor/aicp/config/common_full_phone.mk)|g' device/realme/RMX2185/lineage_RMX2185.mk
+    mv device/realme/RMX2185/lineage_RMX2185.mk device/realme/RMX2185/aicp_RMX2185.mk
+
 }
 
 build_src() {
     source build/envsetup.sh
     set_remote_vars
-
-    export RBE_CXX_EXEC_STRATEGY="racing"
-    export RBE_JAVAC_EXEC_STRATEGY="racing"
-    export RBE_R8_EXEC_STRATEGY="racing"
-    export RBE_D8_EXEC_STRATEGY="racing"
 
     export SKIP_ABI_CHECKS=true    
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys

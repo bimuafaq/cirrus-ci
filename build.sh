@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    # repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
-    repo init -u https://github.com/AICP/platform_manifest.git -b s12.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom romx
     mkdir -p .repo/local_manifests
     mv romx/script/rom/12* .repo/local_manifests/
@@ -11,29 +10,25 @@ setup_src() {
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
-    # cd prebuilts/prebuiltapks
-    # git lfs pull
-    # rm -rf Browser Notes Mail Camera eDrive
-    # cd $SRC_DIR
-
     xpatch=$SRC_DIR/romx/script/rom/patch
     zpatch=$SRC_DIR/romx/script/rom/patch/lin12
 
     patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch
+    patch -p1 < $xpatch/12*
 
-    #cd frameworks/base
-    #git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
-    #git am $zpatch/patches_platform/frameworks_base/0*
-    #cd $SRC_DIR
+    cd frameworks/base
+    git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
+    git am $zpatch/patches_platform/frameworks_base/0*
+    cd $SRC_DIR
 
-    #cd packages/apps/Trebuchet
-    #git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
-    #git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
-    #cd $SRC_DIR
+    cd packages/apps/Trebuchet
+    git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
+    git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
+    cd $SRC_DIR
 
-    #cd vendor/lineage
-    #git am $zpatch/patches_platform/vendor_lineage/0*   
-    #cd $SRC_DIR
+    cd vendor/lineage
+    git am $zpatch/patches_platform/vendor_lineage/0*   
+    cd $SRC_DIR
 
     cd system/core
     git am $zpatch/patches_treble_phh/platform_system_core/0001*
@@ -45,14 +40,6 @@ setup_src() {
     cd external/selinux
     git am $zpatch/patches_treble_phh/platform_external_selinux/0002-*
     cd $SRC_DIR
-
-    cd device/realme/RMX2185
-    sed -i 's/lineage_/aicp_/g' AndroidProducts.mk
-    sed -i 's/lineage_/aicp_/g' lineage_RMX2185.mk
-    sed -i 's|$(call inherit-product, vendor/lineage/config/common_full_phone.mk)|$(call inherit-product, vendor/aicp/config/common_full_phone.mk)|g' lineage_RMX2185.mk
-    mv lineage_RMX2185.mk aicp_RMX2185.mk
-    cd $SRC_DIR
-
 }
 
 build_src() {
@@ -71,15 +58,15 @@ build_src() {
     ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     ln -sf "$OWN_KEYS_DIR" user-keys
-    sed -i "1s;^;PRODUCT_DEFAULT_DEV_CERTIFICATE := user-keys/releasekey\nPRODUCT_OTA_PUBLIC_KEYS := user-keys/releasekey\n\n;" "vendor/aicp/config/common.mk"
+    sed -i "1s;^;PRODUCT_DEFAULT_DEV_CERTIFICATE := user-keys/releasekey\nPRODUCT_OTA_PUBLIC_KEYS := user-keys/releasekey\n\n;" "vendor/lineage/config/common.mk"
     
-    brunch RMX2185
+    brunch RMX2185 user
 }
 
 upload_src() {
     REPO="rovars/vars"
     RELEASE_TAG="lineage-19.1"
-    ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
+    ROM_FILE=$(find out/target/product -name "*UNOFFICIAL*.zip" -print -quit)
     ROM_X="https://github.com/$REPO/releases/download/$RELEASE_TAG/$(basename "$ROM_FILE")"
 
     echo "$tokenpat" > tokenpat.txt

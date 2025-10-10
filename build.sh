@@ -27,12 +27,13 @@ setup_src() {
 
     patch -p1 < $xp/init_fatal_reboot_target_recovery.patch    
     awk -i inplace '!/true cannot be used in user builds/' system/sepolicy/Android.mk
+    sed -i '$ a PRODUCT_SYSTEM_DEFAULT_PROPERTIES += persist.sys.disable_rescue=true' vendor/lineage/config/common.mk
 
 }
 
 build_src() {
     source build/envsetup.sh
-    set_remote_vars    
+    set_remote_vars
     brunch RMX2185 user
 }
 

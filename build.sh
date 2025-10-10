@@ -1,41 +1,26 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --depth=1
+
     git clone -q https://github.com/rovars/rom romx
     mkdir -p .repo/local_manifests
-    mv romx/script/rom/12* .repo/local_manifests/
-    retry_rc repo sync -c -j8 --force-sync --no-clone-bundle --no-tags --prune
+    mv romx/script/rom/12.xml .repo/local_manifests/
+   
+    retry_rc repo sync --no-tags --no-clone-bundle -j8
 
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
-    xpatch=$SRC_DIR/romx/script/rom/patch
-    zpatch=$SRC_DIR/romx/script/rom/patch/lin12
+    xpatch=$SRC_DIR/12
+    zpatch=$SRC_DIR/12/patch
 
     patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch    
 
     awk -i inplace '!/true cannot be used in user builds/' system/sepolicy/Android.mk
 
-    cd frameworks/base
-    git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
-    git am $zpatch/patches_platform/frameworks_base/0*
-    cd $SRC_DIR
-
-    cd packages/apps/Trebuchet
-    git am $zpatch/patches_platform/packages_apps_Trebuchet/0*
-    git am $zpatch/patches_platform_personal/packages_apps_Trebuchet/0*
-    cd $SRC_DIR
-
-    cd vendor/lineage
-    git am $zpatch/patches_platform/vendor_lineage/0*   
-    cd $SRC_DIR
-
     cd system/core
     git am $zpatch/patches_treble_phh/platform_system_core/0001*
-    git am $zpatch/patches_treble_phh/platform_system_core/0002*
-    git am $zpatch/patches_treble_phh/platform_system_core/0003*
-    git am $zpatch/patches_treble_phh/platform_system_core/0006*
     git am $xpatch/12-allow-per*
     cd $SRC_DIR
 
@@ -48,17 +33,11 @@ build_src() {
     source build/envsetup.sh
     set_remote_vars
 
-    export RBE_CXX_EXEC_STRATEGY="racing"
-    export RBE_JAVAC_EXEC_STRATEGY="racing"
-    export RBE_R8_EXEC_STRATEGY="racing"
-    export RBE_D8_EXEC_STRATEGY="racing"
-
     export SKIP_ABI_CHECKS=true    
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
 
     ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
-
     ln -sf "$OWN_KEYS_DIR" user-keys
     sed -i "1s;^;PRODUCT_DEFAULT_DEV_CERTIFICATE := user-keys/releasekey\nPRODUCT_OTA_PUBLIC_KEYS := user-keys/releasekey\n\n;" "vendor/lineage/config/common.mk"
     

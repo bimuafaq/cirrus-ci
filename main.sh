@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -e
-
-export NINJA_HIGHMEM_NUM_JOBS=1
-
 source "$PWD/build.sh"
+export NINJA_HIGHMEM_NUM_JOBS=1
 
 set_ccache_vars() {
     export USE_CCACHE=1
@@ -104,7 +102,6 @@ set_remote_vars() {
     export RBE_log_path="text://${rbex_logs}/reproxy_log.txt"
     export RBE_reproxy_wait_seconds="20"
 }
-
 
 main() {
     export SRC_DIR=$PWD/src

@@ -3,17 +3,17 @@
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --depth=1
 
-    git clone -q https://github.com/rovars/rom romx
+    git clone -q https://github.com/rovars/rom
     mkdir -p .repo/local_manifests
-    mv romx/script/rom/12.xml .repo/local_manifests/
+    mv rom/12/12.xml .repo/local_manifests/
    
     retry_rc repo sync --no-tags --no-clone-bundle -j8
 
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
-    xpatch=$SRC_DIR/12
-    zpatch=$SRC_DIR/12/patch
+    xpatch=$SRC_DIR/rom/12
+    zpatch=$SRC_DIR/rom/12/patch
 
     patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch    
 

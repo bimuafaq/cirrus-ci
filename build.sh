@@ -44,12 +44,14 @@ setup_src() {
 
     cd external/selinux
     git am $zpatch/patches_treble_phh/platform_external_selinux/0002-*
-    cd $SCR_DIR
+    cd $SRC_DIR
 
-    sed -i 's/lineage_/aicp_/g' device/realme/RMX2185/AndroidProducts.mk
-    sed -i 's/lineage_/aicp_/g' device/realme/RMX2185/lineage_RMX2185.mk
-    sed -i 's|$(call inherit-product, vendor/lineage/config/common_full_phone.mk)|$(call inherit-product, vendor/aicp/config/common_full_phone.mk)|g' device/realme/RMX2185/lineage_RMX2185.mk
-    mv device/realme/RMX2185/lineage_RMX2185.mk device/realme/RMX2185/aicp_RMX2185.mk
+    cd device/realme/RMX2185
+    sed -i 's/lineage_/aicp_/g' AndroidProducts.mk
+    sed -i 's/lineage_/aicp_/g' lineage_RMX2185.mk
+    sed -i 's|$(call inherit-product, vendor/lineage/config/common_full_phone.mk)|$(call inherit-product, vendor/aicp/config/common_full_phone.mk)|g' lineage_RMX2185.mk
+    mv lineage_RMX2185.mk aicp_RMX2185.mk
+    cd $SRC_DIR
 
 }
 

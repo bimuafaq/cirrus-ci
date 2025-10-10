@@ -2,6 +2,7 @@
 set -e
 source "$PWD/build.sh"
 export NINJA_HIGHMEM_NUM_JOBS=1
+export SKIP_ABI_CHECKS=true
 
 set_ccache_vars() {
     export USE_CCACHE=1

@@ -31,16 +31,7 @@ setup_src() {
 
 build_src() {
     source build/envsetup.sh
-    set_remote_vars
-
-    export SKIP_ABI_CHECKS=true    
-    export OWN_KEYS_DIR=$SRC_DIR/romx/keys
-
-    ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
-    ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
-    ln -sf "$OWN_KEYS_DIR" user-keys
-    sed -i "1s;^;PRODUCT_DEFAULT_DEV_CERTIFICATE := user-keys/releasekey\nPRODUCT_OTA_PUBLIC_KEYS := user-keys/releasekey\n\n;" "vendor/lineage/config/common.mk"
-    
+    set_remote_vars    
     brunch RMX2185 user
 }
 

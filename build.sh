@@ -52,16 +52,13 @@ upload_src() {
 
     echo "$tokenpat" > tokenpat.txt
     gh auth login --with-token < tokenpat.txt
-
     if ! gh release view "$RELEASE_TAG" -R "$REPO" > /dev/null 2>&1; then
         gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
     fi
-
     gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber
-
     echo "$ROM_X"
-    MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
-    xc -s "$MSG_XC2"
+
+    xc -s "( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
 
     mkdir -p ~/.config
     mv romx/config/* ~/.config

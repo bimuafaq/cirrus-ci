@@ -13,8 +13,9 @@ setup_src() {
     xpatch=$SRC_DIR/romx/script/rom/patch
     zpatch=$SRC_DIR/romx/script/rom/patch/lin12
 
-    patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch
-    patch -p1 < $xpatch/12*
+    patch -p1 < $xpatch/init_fatal_reboot_target_recovery.patch    
+
+    awk -i inplace '!/true cannot be used in user builds/' system/sepolicy/Android.mk
 
     cd frameworks/base
     git am $xpatch/lin11-base-Revert-New-activity-transitions.patch
@@ -35,6 +36,7 @@ setup_src() {
     git am $zpatch/patches_treble_phh/platform_system_core/0002*
     git am $zpatch/patches_treble_phh/platform_system_core/0003*
     git am $zpatch/patches_treble_phh/platform_system_core/0006*
+    git am $xpatch/12-allow-per*
     cd $SRC_DIR
 
     cd external/selinux

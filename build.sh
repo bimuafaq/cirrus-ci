@@ -3,15 +3,18 @@
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
     git clone -q https://github.com/rovars/rom romx
-    git clone -q https://github.com/rovars/build npatch
+    git clone -q https://github.com/rovars/build r
 
     mkdir -p .repo/local_manifests/
-    mv romx/script/rom/lin10.xml .repo/local_manifests/roomservice.xml
+    mv r/10/lin10.xml .repo/local_manifests/roomservice.xml
 
-    repo sync -j16 -c --force-sync --no-clone-bundle --no-tags --prune
+    repo sync -j8 -c --no-clone-bundle --no-tags
 
     rm -rf frameworks/base/packages/OsuLogin
     rm -rf frameworks/base/packages/PrintRecommendationService
+
+    rm -rf packages/apps/DeskClock
+    git clone -q https://github.com/rovars/android_packages_apps_DeskClock -b lineage-17.1 packages/apps/DeskClock
 
     declare -A PATCHES=(
         ["art"]="android_art/0001-constify_JNINativeMethod.patch"
@@ -27,7 +30,7 @@ setup_src() {
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
-        git am "$SRC_DIR/npatch/Patches/LineageOS-17.1/$patch_file"
+        git am "$SRC_DIR/r/Patches/LineageOS-17.1/$patch_file"
         cd "$SRC_DIR"
     done
 }
@@ -71,6 +74,6 @@ upload_src() {
     xc -s "$MSG_XC2"
 
     mkdir -p ~/.config
-    mv romx/config/* ~/.config
+    mv r/config/* ~/.config
     timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
 }

@@ -33,6 +33,29 @@ setup_src() {
     awk -i inplace '!/true cannot be used in user builds/' system/sepolicy/Android.mk
     sed -i '$ a PRODUCT_SYSTEM_DEFAULT_PROPERTIES += persist.sys.disable_rescue=true' vendor/lineage/config/common.mk
 
+    git clone -q https://github.com/rovars/build npatch
+
+    declare -A PATCHES=(
+        ["art"]="android_art/0001-constify_JNINativeMethod.patch"
+        ["external/conscrypt"]="android_external_conscrypt/0001-constify_JNINativeMethod.patch"
+        ["frameworks/base"]="android_frameworks_base/0018-constify_JNINativeMethod.patch"
+        ["frameworks/ex"]="android_frameworks_ex/0018-constify_JNINativeMethod.patch"
+        ["frameworks/opt/net/wifi"]="android_frameworks_opt_net_wifi/0001-constify_JNINativeMethod.patch"
+        ["libcore"]="android_libcore/0002-constify_JNINativeMethod.patch"
+        ["packages/apps/Nfc"]="android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch"
+        ["packages/apps/Bluetooth"]="android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch"
+        ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
+        ["build/make"]="android_build/0001-Enable_fwrapv.patch"
+        ["build/soong"]="android_build_soong/0001-Enable_fwrapv.patch"
+    )
+
+    for target_dir in "${!PATCHES[@]}"; do
+        patch_file="${PATCHES[$target_dir]}"
+        cd "$target_dir" || exit
+        git am "$SRC_DIR/npatch/Patches/LineageOS-19.1/$patch_file"
+        cd "$SRC_DIR"
+    done
+
 }
 
 build_src() {

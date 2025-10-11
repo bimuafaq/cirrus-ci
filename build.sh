@@ -38,6 +38,7 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     set_remote_vars
+    export RBE_CXX_EXEC_STRATEGY="local"
     brunch RMX2185 user
 }
 

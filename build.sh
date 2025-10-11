@@ -15,6 +15,10 @@ setup_src() {
 
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
+    
+    cd packages/apps/DeskClock
+    git am $zp/patches_platform_personal/packages_apps_DeskClock/00*
+    cd $SRC_DIR
 
     rm -rf system/core
     git clone -q --depth=1 https://github.com/droid-legacy/android_system_core system/core -b lineage-19.1
@@ -37,14 +41,11 @@ setup_src() {
 
     declare -A PATCHES=(
         ["art"]="android_art/0001-constify_JNINativeMethod.patch"
-        ["external/conscrypt"]="android_external_conscrypt/0001-constify_JNINativeMethod.patch"
-        ["frameworks/base"]="android_frameworks_base/0018-constify_JNINativeMethod.patch"
-        ["frameworks/ex"]="android_frameworks_ex/0018-constify_JNINativeMethod.patch"
-        ["frameworks/opt/net/wifi"]="android_frameworks_opt_net_wifi/0001-constify_JNINativeMethod.patch"
+        ["external/conscrypt"]="android_external_conscrypt/0001-constify_JNINativeMethod.patch"        
+        ["frameworks/ex"]="android_frameworks_ex/0001-constify_JNINativeMethod.patch"
         ["libcore"]="android_libcore/0002-constify_JNINativeMethod.patch"
         ["packages/apps/Nfc"]="android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch"
-        ["packages/apps/Bluetooth"]="android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch"
-        ["prebuilts/abi-dumps/vndk"]="android_prebuilts_abi-dumps_vndk/0001-protobuf-avi.patch"
+        ["packages/apps/Bluetooth"]="android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch"       
         ["build/make"]="android_build/0001-Enable_fwrapv.patch"
         ["build/soong"]="android_build_soong/0001-Enable_fwrapv.patch"
     )

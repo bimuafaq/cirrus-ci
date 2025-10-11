@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    repo init -u https://github.com/LineageOS/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --depth=1
+    repo init -u https://github.com/rovars/android.git -b lineage-19.1 --git-lfs --groups=all,-notdefault,-darwin,-mips --depth=1
  
     git clone -q https://github.com/rovars/rom r
 
@@ -16,6 +16,9 @@ setup_src() {
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
+    rm -rf system/core
+    git clone -q --depth=1 https://github.com/droid-legacy/android_system_core system/core -b lineage-19.1
+
     cd system/core
     git am $zp/patches_treble_phh/platform_system_core/0001*
     git am $xp/12-allow-per*
@@ -25,7 +28,8 @@ setup_src() {
     git am $zp/patches_treble_phh/platform_external_selinux/0002-*
     cd $SRC_DIR
 
-    patch -p1 < $xp/init_fatal_reboot_target_recovery.patch    
+    patch -p1 < $xp/init_fatal_reboot_target_recovery.patch
+    patch -p1 < $xp/12.patch
     awk -i inplace '!/true cannot be used in user builds/' system/sepolicy/Android.mk
     sed -i '$ a PRODUCT_SYSTEM_DEFAULT_PROPERTIES += persist.sys.disable_rescue=true' vendor/lineage/config/common.mk
 

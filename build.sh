@@ -38,7 +38,13 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     set_remote_vars
-    export RBE_CXX_EXEC_STRATEGY="local"
+    # export RBE_instance="nano.buildbuddy.io"
+    # export RBE_service="nano.buildbuddy.io:443"
+    # export RBE_remote_headers="x-buildbuddy-api-key=$nanokeyvars"
+    export RBE_CXX_EXEC_STRATEGY="racing"
+    export RBE_JAVAC_EXEC_STRATEGY="racing"
+    export RBE_R8_EXEC_STRATEGY="racing"
+    export RBE_D8_EXEC_STRATEGY="racing"
     brunch RMX2185 user
 }
 

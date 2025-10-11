@@ -2,11 +2,11 @@
 
 setup_src() {
     repo init --depth=1 -u https://github.com/querror/android -b lineage-17.1
-    git clone -q https://github.com/rovars/rom romx
+    git clone -q https://github.com/rovars/rom x
     git clone -q https://github.com/rovars/build r
 
     mkdir -p .repo/local_manifests/
-    mv r/10/lin10.xml .repo/local_manifests/roomservice.xml
+    mv x/10/lin10.xml .repo/local_manifests/roomservice.xml
 
     repo sync -j8 -c --no-clone-bundle --no-tags
 
@@ -74,6 +74,6 @@ upload_src() {
     xc -s "$MSG_XC2"
 
     mkdir -p ~/.config
-    mv r/config/* ~/.config
+    mv x/config/* ~/.config
     timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
 }

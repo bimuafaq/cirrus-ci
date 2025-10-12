@@ -46,10 +46,10 @@ build_src() {
     export BUILD_HOSTNAME=android-build
     export RELEASE_TYPE=UNOFFICIAL
     export EXCLUDE_SYSTEMUI_TESTS=true
-    export OWN_KEYS_DIR=$SRC_DIR/romx/keys
+    export OWN_KEYS_DIR=$SRC_DIR/x/keys
 
-    ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
-    ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
+    sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
+    sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     brunch RMX2185 user
 }

@@ -40,6 +40,7 @@ build_src() {
     source build/envsetup.sh
     set_ccache_vars
 
+    export INSTALL_MOD_STRIP=1
     export KBUILD_BUILD_USER=nobody
     export KBUILD_BUILD_HOST=android-build
     export BUILD_USERNAME=nobody

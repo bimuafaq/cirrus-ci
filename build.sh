@@ -53,7 +53,7 @@ build_src() {
 
     export RELEASE_TYPE=UNOFFICIAL
     export EXCLUDE_SYSTEMUI_TESTS=true
-    export OWN_KEYS_DIR=$SRC_DIR/x/keys
+    export OWN_KEYS_DIR=$rom_src/x/keys
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem

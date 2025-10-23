@@ -44,8 +44,6 @@ build_src() {
     export BOARD_USES_MTK_HARDWARE=true
     export MTK_HARDWARE=true
     export USE_OPENGL_RENDERER=true
-    export WITH_DEXPREOPT=false
-    export DONT_DEXPREOPT_PREBUILTS=true
     export USE_MINIKIN=true
     export EXTENDED_FONT_FOOTPRINT=true
 

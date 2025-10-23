@@ -31,14 +31,13 @@ setup_src() {
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
         git am "$SRC_DIR/r/Patches/LineageOS-17.1/$patch_file"
-        cd "$SRC_DIR"
+        cd "$rom_src"
     done
 }
 
-build_src() {
-    setup_cache
+build_src() {    
     source build/envsetup.sh
-    set_ccache_vars
+    setup_ccache_vars
 
     export INSTALL_MOD_STRIP=1
     export BOARD_USES_MTK_HARDWARE=true

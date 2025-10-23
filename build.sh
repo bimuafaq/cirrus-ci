@@ -30,7 +30,7 @@ setup_src() {
     for target_dir in "${!PATCHES[@]}"; do
         patch_file="${PATCHES[$target_dir]}"
         cd "$target_dir" || exit
-        git am "$SRC_DIR/r/Patches/LineageOS-17.1/$patch_file"
+        git am "$rom_src/r/Patches/LineageOS-17.1/$patch_file"
         cd "$rom_src"
     done
 }

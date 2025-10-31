@@ -5,7 +5,7 @@ setup_src() {
 
     git clone -q https://github.com/rovars/rom x
     mkdir -p  .repo/local_manifests
-    mv x/11/*.xml .repo/local_manifests/
+    mv x/11/ext.xml .repo/local_manifests/
 
     retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
 
@@ -18,26 +18,26 @@ setup_src() {
 
 build_module_src() {
     rm -rf packages/apps/Trebuchet
-    git clone --depth=1 https://github.com/rovars/android_packages_apps_Trebuchet -b x packages/apps/Trebuchet
+    git clone --depth=1 https://github.com/LawnchairLauncher/lawnchair -b 14-dev packages/apps/Launcher3
 
     lunch exthm_RMX2185-user
 
-    mmm packages/apps/Trebuchet/:TrebuchetQuickStep
-    7z a -t7z -mx=9 TrebuchetQuickStep.apk.7z out/*/*/*/system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
-    xc -c TrebuchetQuickStep.apk.7z
+    mmm packages/apps/Launcher3/:Launcher3QuickStep
+    7z a -t7z -mx=9 Launcher3QuickStep.apk.7z out/*/*/*/system/system_ext/priv-app/Launcher3QuickStep/Launcher3QuickStep.apk
+    xc -c Launcher3QuickStep.apk.7z
 
     mka installclean
 
-    mmm packages/apps/Trebuchet/:TrebuchetQuickStepGo
-    7z a -t7z -mx=9 TrebuchetQuickStepGo.apk.7z out/*/*/*/system/system_ext/priv-app/TrebuchetQuickStepGo/TrebuchetQuickStepGo.apk
-    xc -c TrebuchetQuickStepGo.apk.7z
+    mmm packages/apps/Launcher3/:Launcher3QuickStepGo
+    7z a -t7z -mx=9 Launcher3QuickStepGo.apk.7z out/*/*/*/system/system_ext/priv-app/Launcher3QuickStepGo/Launcher3QuickStepGo.apk
+    xc -c Launcher3QuickStepGo.apk.7z
     exit 1
 }
 
 build_src() {
     source build/envsetup.sh
     setup_rbe_vars
-    # build_module_src
+    build_module_src
 
     export INSTALL_MOD_STRIP=1
     export BOARD_USES_MTK_HARDWARE=true
@@ -49,8 +49,13 @@ build_src() {
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
 
+    # export RBE_instance="nano.buildbuddy.io"
+    # export RBE_service="nano.buildbuddy.io:443"
+    # export RBE_remote_headers="x-buildbuddy-api-key=$nanokeyvars"
+
     export OWN_KEYS_DIR=$rom_src/x/keys
-    export EXTHM_EXTRAVERSION=signed
+    export TARGET_EXTHM_DICTIONARIES=false
+    # export EXTHM_EXTRAVERSION=signed
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem

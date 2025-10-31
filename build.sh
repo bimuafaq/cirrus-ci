@@ -17,8 +17,9 @@ setup_src() {
 }
 
 build_module_src() {
+    rm -rf packages/apps/Launcher3
     rm -rf packages/apps/Trebuchet
-    git clone --depth=1 https://github.com/LawnchairLauncher/lawnchair -b 14-dev packages/apps/Launcher3
+    git clone --depth=1 https://github.com/LawnchairLauncher/lawnchair -b 11-dev packages/apps/Launcher3
 
     lunch exthm_RMX2185-user
 

@@ -1,45 +1,55 @@
 #!/usr/bin/env bash
 
 setup_src() {
-    repo init -u https://github.com/rovars/android.git -b exthm-11 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
 
     git clone -q https://github.com/rovars/rom x
-    mkdir -p  .repo/local_manifests
-    mv x/11/ext.xml .repo/local_manifests/
+    git clone -q https://codeberg.org/lin18-microG/local_manifests .repo/local_manifests
+    rm -rf .repo/local_manifests/setup*
+    mv x/11/device.xml .repo/local_manifests/
 
     retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
 
+    rm -rf external/AOSmium-prebuilt
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
-    xpatch=$rom_src/x/11
+    zpatch=$SRC_DIR/z_patches
+    xpatch=$SRC_DIR/x/11
+
     patch -p1 < $xpatch/*build.patch
-}
 
-build_module_src() {
-    rm -rf packages/apps/Launcher3
+    rm -rf build/make
+    git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
+
+    rm -rf vendor/lineage
+    git clone https://github.com/bimuafaq/android_packages_apps_Settings vendor/lineage -b lineage-18.1 --depth=1
+
+    rm -rf frameworks/base
+    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
+
+    rm -rf packages/apps/Settings
+    git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
+
     rm -rf packages/apps/Trebuchet
-    git clone --depth=1 https://github.com/LawnchairLauncher/lawnchair -b 11-dev packages/apps/Launcher3
+    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b exthm-11 --depth=1
 
-    lunch exthm_RMX2185-user
+    rm -rf packages/apps/DeskClock
+    git clone https://github.com/rovars/android_packages_apps_DeskClock -b exthm-11 --depth=1
 
-    mmm packages/apps/Launcher3/:Launcher3QuickStep
-    7z a -t7z -mx=9 Launcher3QuickStep.apk.7z out/*/*/*/system/system_ext/priv-app/Launcher3QuickStep/Launcher3QuickStep.apk
-    xc -c Launcher3QuickStep.apk.7z
+    git clone -q https://github.com/rovars/build r
 
-    mka installclean
+    cd packages/apps/LineageParts
+    rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
+    git am $rom_src/r/Patches/LineageOS-1i.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
+    cd "$rom_src"
 
-    mmm packages/apps/Launcher3/:Launcher3QuickStepGo
-    7z a -t7z -mx=9 Launcher3QuickStepGo.apk.7z out/*/*/*/system/system_ext/priv-app/Launcher3QuickStepGo/Launcher3QuickStepGo.apk
-    xc -c Launcher3QuickStepGo.apk.7z
-    exit 1
 }
 
 build_src() {
     source build/envsetup.sh
     setup_rbe_vars
-    build_module_src
-
+ 
     export INSTALL_MOD_STRIP=1
     export BOARD_USES_MTK_HARDWARE=true
     export MTK_HARDWARE=true
@@ -50,23 +60,18 @@ build_src() {
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
 
-    # export RBE_instance="nano.buildbuddy.io"
-    # export RBE_service="nano.buildbuddy.io:443"
-    # export RBE_remote_headers="x-buildbuddy-api-key=$nanokeyvars"
-
-    export OWN_KEYS_DIR=$rom_src/x/keys
-    export TARGET_EXTHM_DICTIONARIES=false
-    # export EXTHM_EXTRAVERSION=signed
+    export OWN_KEYS_DIR=$SRC_DIR/romx/keys
+    export RELEASE_TYPE=UNOFFICIAL
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
-
+    
     brunch RMX2185 user 2>&1 | tee build.txt
 }
 
 upload_src() {
-    REPO="rovars/release"
-    RELEASE_TAG="ExthmUI"
+    REPO="rovars/vars"
+    RELEASE_TAG="lineage-18.1"
     ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
     ROM_X="https://github.com/$REPO/releases/download/$RELEASE_TAG/$(basename "$ROM_FILE")"
 

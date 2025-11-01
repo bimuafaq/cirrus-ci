@@ -19,10 +19,7 @@ setup_src() {
     zpatch=$rom_src/z_patches
     xpatch=$rom_src/x/11
 
-    patch -p1 < $xpatch/*build.patch
-
-    rm -rf build/make
-    git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
+    patch -p1 < $xpatch/*build.patch  
 
     rm -rf vendor/lineage
     git clone https://github.com/bimuafaq/android_packages_apps_Settings vendor/lineage -b lineage-18.1 --depth=1

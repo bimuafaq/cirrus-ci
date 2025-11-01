@@ -36,12 +36,12 @@ setup_src() {
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock -b exthm-11 --depth=1
 
-    git clone -q https://github.com/rovars/build r
-
+    git clone -q https://github.com/rovars/build xxx
     cd packages/apps/LineageParts
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
-    git am $rom_src/r/Patches/LineageOS-18.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
+    git am $rom_src/xxx/Patches/LineageOS-18.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
     cd $rom_src
+    rm -rf xxx
 
 }
 

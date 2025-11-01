@@ -59,7 +59,7 @@ build_src() {
     export BUILD_USERNAME=nobody
     export BUILD_HOSTNAME=android-build
 
-    export OWN_KEYS_DIR=$rom_src/romx/keys
+    export OWN_KEYS_DIR=$rom_src/x/keys
     # export RELEASE_TYPE=UNOFFICIAL
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

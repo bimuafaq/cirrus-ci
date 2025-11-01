@@ -22,7 +22,7 @@ setup_src() {
     patch -p1 < $xpatch/*build.patch  
 
     rm -rf vendor/lineage
-    git clone https://github.com/bimuafaq/android_packages_apps_Settings vendor/lineage -b lineage-18.1 --depth=1
+    git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
     git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1

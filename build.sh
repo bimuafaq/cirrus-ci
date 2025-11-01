@@ -14,8 +14,8 @@ setup_src() {
     rm -rf external/chromium-webview
     git clone -q --depth=1 https://github.com/LineageOS/android_external_chromium-webview -b master external/chromium-webview
 
-    zpatch=$SRC_DIR/z_patches
-    xpatch=$SRC_DIR/x/11
+    zpatch=$rom_src/z_patches
+    xpatch=$rom_src/x/11
 
     patch -p1 < $xpatch/*build.patch
 
@@ -42,7 +42,7 @@ setup_src() {
     cd packages/apps/LineageParts
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
     git am $rom_src/r/Patches/LineageOS-1i.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
-    cd "$rom_src"
+    cd $rom_src
 
 }
 
@@ -61,7 +61,7 @@ build_src() {
     export BUILD_HOSTNAME=android-build
 
     export OWN_KEYS_DIR=$SRC_DIR/romx/keys
-    export RELEASE_TYPE=UNOFFICIAL
+    # export RELEASE_TYPE=UNOFFICIAL
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
@@ -70,7 +70,7 @@ build_src() {
 }
 
 upload_src() {
-    REPO="rovars/vars"
+    REPO="rovars/release"
     RELEASE_TAG="lineage-18.1"
     ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
     ROM_X="https://github.com/$REPO/releases/download/$RELEASE_TAG/$(basename "$ROM_FILE")"

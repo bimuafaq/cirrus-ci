@@ -8,6 +8,8 @@ setup_src() {
     rm -rf .repo/local_manifests/setup*
     mv x/11/device.xml .repo/local_manifests/
 
+    sed -i 's#<project path="build/make" name="lin18-microG/android_build_make" groups="pdk" remote="codeberg" >#<project path="build/make" name="bimuafaq/android_build_make" groups="pdk" remote="github" >#g' .repo/local_manifests/updates.xml
+
     retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
 
     rm -rf external/AOSmium-prebuilt

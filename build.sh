@@ -41,7 +41,7 @@ setup_src() {
 
     cd packages/apps/LineageParts
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
-    git am $rom_src/r/Patches/LineageOS-1i.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
+    git am $rom_src/r/Patches/LineageOS-18.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
     cd $rom_src
 
 }

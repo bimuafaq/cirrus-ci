@@ -36,9 +36,6 @@ setup_src() {
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock -b exthm-11 --depth=1
 
-    rm -rf system/core
-    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1 --depth=1
-
     git clone -q https://github.com/rovars/build xxx
     cd packages/apps/LineageParts
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
@@ -57,10 +54,10 @@ build_src() {
     export MTK_HARDWARE=true
     export USE_OPENGL_RENDERER=true
 
-    export KBUILD_BUILD_USER=nobody
-    export KBUILD_BUILD_HOST=android-build
-    export BUILD_USERNAME=nobody
-    export BUILD_HOSTNAME=android-build
+    export KBUILD_BUILD_USER="nobody"
+    export KBUILD_BUILD_HOST="android-build"
+    export BUILD_USERNAME="nobody"
+    export BUILD_HOSTNAME="android-build"
 
     export OWN_KEYS_DIR=$rom_src/x/keys
     # export RELEASE_TYPE=UNOFFICIAL
@@ -68,7 +65,7 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
     
-    brunch RMX2185 user 2>&1 | tee build.txt
+    brunch RMX2185 user
 }
 
 upload_src() {

@@ -19,7 +19,8 @@ setup_src() {
     zpatch=$rom_src/z_patches
     xpatch=$rom_src/x/11
 
-    patch -p1 < $xpatch/*build.patch  
+    rm -rf system/core
+    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1 --depth=1
 
     rm -rf vendor/lineage
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
@@ -43,6 +44,7 @@ setup_src() {
     cd $rom_src
     rm -rf xxx
 
+    patch -p1 < $xpatch/*build.patch
 }
 
 build_src() {
@@ -54,18 +56,13 @@ build_src() {
     export MTK_HARDWARE=true
     export USE_OPENGL_RENDERER=true
 
-    export KBUILD_BUILD_USER="nobody"
-    export KBUILD_BUILD_HOST="android-build"
-    export BUILD_USERNAME="nobody"
-    export BUILD_HOSTNAME="android-build"
-
     export OWN_KEYS_DIR=$rom_src/x/keys
     # export RELEASE_TYPE=UNOFFICIAL
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
-    
-    brunch RMX2185 user
+
+    brunch RMX2185 user 2>&1 | tee build.txt
 }
 
 upload_src() {

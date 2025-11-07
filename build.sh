@@ -52,7 +52,6 @@ d_patch=$rom_src/xxx/Patches/LineageOS-18.1
 
 list_repos() {
 cat <<EOF
-external/ant-wireless/ant_native:patch_702_ant-wireless.patch
 external/conscrypt:patch_703_conscrypt.patch
 external/icu:patch_704_icu.patch
 external/neven:patch_705_neven.patch

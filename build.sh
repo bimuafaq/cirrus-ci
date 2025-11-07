@@ -42,9 +42,62 @@ setup_src() {
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
     git am $rom_src/xxx/Patches/LineageOS-18.1/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
     cd $rom_src
-    rm -rf xxx
 
     patch -p1 < $xpatch/*build.patch
+
+git clone -q https://codeberg.org/lin18-microG/z_patches -b lin-18.1-microG zzz
+
+z_patch=$rom_src/zzz
+d_patch=$rom_src/xxx/Patches/LineageOS-18.1
+
+list_repos() {
+cat <<EOF
+external/ant-wireless/ant_native:patch_702_ant-wireless.patch
+external/conscrypt:patch_703_conscrypt.patch
+external/icu:patch_704_icu.patch
+external/neven:patch_705_neven.patch
+frameworks/rs:patch_706_rs.patch
+frameworks/ex:patch_707_ex.patch
+frameworks/opt/net/voip:patch_708_voip.patch
+hardware/qcom-caf/common:patch_709_qc-common.patch
+lineage-sdk:patch_710_lineage-sdk.patch
+packages/apps/FMRadio:patch_711_FMRadio.patch
+packages/apps/Gallery2:patch_712_Gallery2.patch
+vendor/qcom/opensource/fm-commonsys:patch_716_fm-commonsys.patch
+vendor/nxp/opensource/commonsys/packages/apps/Nfc:patch_717_nxp-Nfc.patch
+vendor/qcom/opensource/libfmjni:patch_718_libfmjni.patch
+EOF
+}
+
+list_repos | while read STR; do
+  DIR=$(echo $STR | cut -f1 -d:)
+  PTC=$(echo $STR | cut -f2 -d:)
+  
+  cd $rom_src/$DIR
+  git am < $z_patch/$PTC
+  cd $rom_src
+done
+
+list_constify_patches() {
+cat <<EOF
+art:$d_patch/android_art/0001-constify_JNINativeMethod.patch
+frameworks/base:$d_patch/android_frameworks_base/0017-constify_JNINativeMethod.patch
+libcore:$d_patch/android_libcore/0002-constify_JNINativeMethod.patch
+packages/apps/Bluetooth:$d_patch/android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch
+packages/apps/Nfc:$d_patch/android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch
+EOF
+}
+
+list_constify_patches | while read STR; do
+  DIR=$(echo $STR | cut -f1 -d:)
+  PATCH_PATH=$(echo $STR | cut -f2 -d:)
+  
+  cd $rom_src/$DIR
+  git am < $PATCH_PATH
+  cd $rom_src
+done
+
+rm -rf xxx zzz
 }
 
 build_src() {

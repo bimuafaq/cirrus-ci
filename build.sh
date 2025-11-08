@@ -13,8 +13,8 @@ setup_src() {
 
     retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
 
-    z_patch=zzz
-    x_patch=xxx/Patches/LineageOS-18.1
+    z_patch=$PWD/zzz
+    x_patch=$PWD/xxx/Patches/LineageOS-18.1
 
     rm -rf external/AOSmium-prebuilt
     rm -rf external/chromium-webview
@@ -46,6 +46,8 @@ setup_src() {
     git am $x_patch/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
     cd -
 
+    patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
+
     list_repos() {
 cat <<EOF
 external/conscrypt:patch_703_conscrypt.patch
@@ -72,7 +74,7 @@ EOF
         echo "Applying $z_patch/$PTC to $DIR..."
         cd "$DIR"
         git am < "$z_patch/$PTC"
-        cd - > /dev/null
+        cd -
     done
 
     list_constify_patches() {
@@ -93,11 +95,10 @@ EOF
         echo "Applying $x_patch/$PTC to $DIR..."
         cd "$DIR"
         git am < "$x_patch/$PTC"
-        cd - > /dev/null
+        cd -
     done
 
     rm -rf xxx zzz
-    patch -p1 < xx/11/allow-permissive-user-build.patch
 }
 
 build_src() {

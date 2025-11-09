@@ -99,8 +99,7 @@ EOF
     done
 
     rm -rf xxx zzz
-    echo "PRODUCT_USE_PROFILE_FOR_BOOT_IMAGE := true" >> vendor/lineage/config/common_mobile.mk
-    echo "PRODUCT_DEX_PREOPT_BOOT_IMAGE_PROFILE_LOCATION := frameworks/base/config/boot-image-profile.txt" >> vendor/lineage/config/common_mobile.mk
+
 }
 
 build_src() {

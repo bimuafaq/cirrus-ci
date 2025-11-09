@@ -20,6 +20,9 @@ setup_src() {
     rm -rf external/chromium-webview
     git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
 
+    rm -rf lineage-sdk
+    git clone https://github.com/bimuafaq/android_lineage-sdk lineage-sdk -b lineage-18.1 --depth=1
+
     rm -rf build/make
     git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
 

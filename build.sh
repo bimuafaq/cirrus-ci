@@ -33,7 +33,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
-    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
+    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b ext --depth=1
 
     rm -rf packages/apps/Settings
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
@@ -108,7 +108,7 @@ EOF
 build_src() {
     source build/envsetup.sh
     setup_rbe_vars
- 
+
     export INSTALL_MOD_STRIP=1
     export BOARD_USES_MTK_HARDWARE=true
     export MTK_HARDWARE=true
@@ -118,6 +118,11 @@ build_src() {
 
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
+
+    mmma frameworks/base/packages/SystemUI:SystemUI
+    APK_PATH=$(find $OUT -path "*/priv-app/SystemUI/SystemUI.apk" -type f | tail -n 1)
+    7z a -so -t7z SystemUI.7z $APK_PATH | xc -c SystemUI.7z  
+    exit 0
 
     brunch RMX2185 user
 }
@@ -143,5 +148,5 @@ upload_src() {
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
     timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
-    
+    exit 0    
 }

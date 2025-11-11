@@ -17,8 +17,8 @@ setup_src() {
     x_patch=$PWD/xxx/Patches/LineageOS-18.1
 
     rm -rf external/AOSmium-prebuilt
-    rm -rf external/chromium-webview
-    git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
+    #rm -rf external/chromium-webview
+    #git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
 
     rm -rf lineage-sdk
     git clone https://github.com/bimuafaq/android_lineage-sdk lineage-sdk -b lineage-18.1 --depth=1

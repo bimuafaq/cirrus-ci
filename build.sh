@@ -119,6 +119,8 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
+    lunch lineage_RMX2185-user
+
     mmma frameworks/base/packages/SystemUI:SystemUI
     APK_PATH=$(find $OUT -path "*/priv-app/SystemUI/SystemUI.apk" -type f | tail -n 1)
     7z a -so -t7z SystemUI.7z $APK_PATH | xc -c SystemUI.7z  

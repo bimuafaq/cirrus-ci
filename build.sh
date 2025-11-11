@@ -143,5 +143,5 @@ upload_src() {
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
     timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
-    aapt d --values resources out/target/product/RMX2185/system/system_ext/priv-app/Settings/Settings.apk | grep "config_materialPreferenceIconSpaceReserved"
+    
 }

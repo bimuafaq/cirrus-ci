@@ -125,7 +125,9 @@ build_src() {
     #7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI
     #xc -c SystemUI.7z
 
-    mmma external/angle:ANGLE    
+    mmma external/angle:ANGLE
+    7z a -r ANGLE.7z out/target/product/RMX2185/system/priv-app/ANGLE
+    xc -c ANGLE.7z
     exit 0
 
     brunch RMX2185 user

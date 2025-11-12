@@ -121,9 +121,11 @@ build_src() {
 
     lunch lineage_RMX2185-user
 
-    mmma frameworks/base/packages/SystemUI:SystemUI
-    7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI
-    xc -c SystemUI.7z
+    #mmma frameworks/base/packages/SystemUI:SystemUI
+    #7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI
+    #xc -c SystemUI.7z
+
+    mmma external/angle:ANGLE    
     exit 0
 
     brunch RMX2185 user
@@ -150,5 +152,4 @@ upload_src() {
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
     timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
-    exit 0    
 }

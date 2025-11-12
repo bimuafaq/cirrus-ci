@@ -122,8 +122,8 @@ build_src() {
     lunch lineage_RMX2185-user
 
     mmma frameworks/base/packages/SystemUI:SystemUI
-    APK_PATH=$(find $OUT -path "*/priv-app/SystemUI/SystemUI.apk" -type f | tail -n 1)
-    7z a -so -t7z SystemUI.7z $APK_PATH | xc -c SystemUI.7z  
+    7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI
+    xc -c SystemUI.7z
     exit 0
 
     brunch RMX2185 user

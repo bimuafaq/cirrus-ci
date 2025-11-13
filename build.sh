@@ -33,7 +33,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
-    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
+    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b media --depth=1
 
     rm -rf packages/apps/Settings
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
@@ -122,11 +122,11 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-    # lunch lineage_RMX2185-user
+    lunch lineage_RMX2185-user
 
-    # mmma frameworks/base/packages/SystemUI:SystemUI
-    # 7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI/SystemUI.apk
-    # xc -c SystemUI.7z
+    mmma frameworks/base/packages/SystemUI:SystemUI
+    7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI/SystemUI.apk
+    xc -c SystemUI.7z
 
     # mmma packages/apps/LineageParts:LineageParts
     # 7z a -r LineageParts.7z out/target/product/RMX2185/system/priv-app/LineageParts/LineageParts.apk

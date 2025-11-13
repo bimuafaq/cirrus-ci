@@ -18,8 +18,8 @@ setup_src() {
 
     rm -rf vendor/apn
     rm -rf external/AOSmium-prebuilt
-    #rm -rf external/chromium-webview
-    #git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
+    # rm -rf external/chromium-webview
+    # git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
 
     rm -rf lineage-sdk
     git clone https://github.com/bimuafaq/android_lineage-sdk lineage-sdk -b lineage-18.1 --depth=1
@@ -34,7 +34,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
-    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b media --depth=1
+    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
 
     rm -rf packages/apps/Settings
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
@@ -45,8 +45,8 @@ setup_src() {
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1
 
-    rm -rf packages/apps/LineageParts
-    git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
+    # rm -rf packages/apps/LineageParts
+    # git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
     cd packages/apps/LineageParts
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
@@ -129,9 +129,9 @@ build_src() {
     7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI/SystemUI.apk
     xc -c SystemUI.7z
 
-    mmma packages/apps/LineageParts:LineageParts
-    7z a -r LineageParts.7z out/target/product/RMX2185/system/priv-app/LineageParts/LineageParts.apk
-    xc -c LineageParts.7z
+    # mmma packages/apps/LineageParts:LineageParts
+    # 7z a -r LineageParts.7z out/target/product/RMX2185/system/priv-app/LineageParts/LineageParts.apk
+    # xc -c LineageParts.7z
 
     exit 0
 

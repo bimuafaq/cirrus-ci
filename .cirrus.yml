@@ -4,6 +4,8 @@ env:
   tokentl: "ENCRYPTED[!9aa257cad95736f4897f178d239e8a6b387011bada0192a6c220f8ce4b97234be111be60eb3e5d43f227e2cefa8cc20c!]"
   idtl: "ENCRYPTED[!4508643dc06e496a5bdef35696637b616238ec9af7111e0efb265d7adbee5a3f5890d487225ccdb1d259b189cf5a567d!]"
   tokenpat: "ENCRYPTED[!7e2f6c972d796f300f680d14570b597514746b69c84bfbaed5e0291b3e16b5a5e57baba7d1a039fdb8011c55cf140ed7!]"
+  rclonedir: "me:rom"
+  rclonefile: "ccache-lin-18.tar.gz"
 
 task:
   name: "RBE ROM"
@@ -17,6 +19,7 @@ task:
   sync_script:
     - echo "$credensial" > ~/.git-credentials
     - echo "$gitconfigs" > ~/.gitconfig
+    - echo "$rcloneconfig" > ~/.rclone.conf
     - rm -rf .git
     - ./main.sh sync
   build_script: ./main.sh build

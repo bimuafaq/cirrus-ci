@@ -126,7 +126,7 @@ build_src() {
     7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI/SystemUI.apk
     xc -c SystemUI.7z
 
-    save_cache || true
+    save_cache
 
     # mka bacon
 }

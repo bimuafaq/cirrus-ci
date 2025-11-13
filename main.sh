@@ -19,12 +19,11 @@ retry_rc() {
 setup_ccache_vars() {
     export USE_CCACHE=1
     export CCACHE_EXEC="$(command -v ccache)"
-    export CCACHE_DIR="$HOME/.ccache"
+    export CCACHE_DIR="~/.ccache"
     mkdir -p "$CCACHE_DIR"
     ccache -M 50G -F 0 &>/dev/null
     ccache -o compression=true &>/dev/null
-
-    cd "$HOME"
+    cd ~/
     if retry_rc rclone copy "$rclonedir/$rclonefile" . &>/dev/null; then
         tar -xzf "$rclonefile" -C .
         rm -f "$rclonefile"
@@ -35,14 +34,14 @@ setup_ccache_vars() {
         echo "===== no ccache? ah skip ====="
         xc -s2 "( no ccache? ah skip )"
     fi
-    cd $PWD
+    cd -
 }
 
 save_cache() {
     export CCACHE_DISABLE=1
     ccache -s
     ccache --cleanup --zero-stats &>/dev/null
-    cd "$HOME"
+    cd ~/
     tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed || {
         xc -x "create ccache archive failure!"
         return 1
@@ -56,7 +55,7 @@ save_cache() {
         xc -s2 "( ccache save failure )"
         return 1
     fi
-    cd $PWD
+    cd -
 }
 
 setup_rbe_vars() {

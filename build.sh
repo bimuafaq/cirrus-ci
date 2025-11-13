@@ -42,7 +42,10 @@ setup_src() {
     git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b exthm-11 --depth=1
 
     rm -rf packages/apps/DeskClock
-    git clone https://github.com/rovars/android_packages_apps_DeskClock -b exthm-11 --depth=1
+    git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1
+
+    rm -rf packages/apps/LineageParts
+    git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
     cd packages/apps/LineageParts
     rm -rf src/org/lineageos/lineageparts/lineagestats/ res/xml/anonymous_stats.xml res/xml/preview_data.xml
@@ -121,13 +124,14 @@ build_src() {
 
     lunch lineage_RMX2185-user
 
-    #mmma frameworks/base/packages/SystemUI:SystemUI
-    #7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI
-    #xc -c SystemUI.7z
+    mmma frameworks/base/packages/SystemUI:SystemUI
+    7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI/SystemUI.apk
+    xc -c SystemUI.7z
 
-    mmma external/angle:ANGLE
-    7z a -r ANGLE.7z out/target/product/RMX2185/system/priv-app/ANGLE
-    xc -c ANGLE.7z
+    mmma packages/apps/LineageParts:LineageParts
+    7z a -r LineageParts.7z out/target/product/RMX2185/system/priv-app/LineageParts/LineageParts.apk
+    xc -c LineageParts.7z
+
     exit 0
 
     brunch RMX2185 user
@@ -146,12 +150,12 @@ upload_src() {
         gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
     fi
 
-    gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber
+    gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
 
     echo "$ROM_X"
     MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
     xc -s "$MSG_XC2"
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
-    timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE"
+    timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE" || true
 }

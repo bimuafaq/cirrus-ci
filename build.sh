@@ -33,7 +33,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
-    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b media --depth=1
+    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
 
     rm -rf packages/apps/Settings
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
@@ -77,7 +77,7 @@ EOF
         DIR="${STR%%:*}"
         PTC="${STR##*:}"
         
-        echo "Applying $z_patch/$PTC to $DIR..."
+        echo "Applying $DIR..."
         cd "$DIR"
         git am < "$z_patch/$PTC"
         cd -
@@ -110,8 +110,7 @@ EOF
 
 build_src() {
     source build/envsetup.sh
-    # setup_rbe_vars
-    setup_ccache_vars
+    setup_rbe_vars
     lunch lineage_RMX2185-user
 
     export INSTALL_MOD_STRIP=1
@@ -123,14 +122,14 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     mmma frameworks/base/packages/SystemUI:SystemUI
-    7z a -r SystemUI.7z out/target/product/RMX2185/system/system_ext/priv-app/SystemUI/SystemUI.apk
+    cd out/target/product/RMX2185
+    7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
     xc -c SystemUI.7z
 
     # mka bacon
 }
 
 upload_src() {
-    save_cache
     REPO="rovars/release"
     RELEASE_TAG="lineage-18.1"
     ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)

@@ -110,9 +110,9 @@ EOF
 
 build_src() {
     source build/envsetup.sh
-    # setup_rbe_vars
-    setup_ccache_vars
-    lunch lineage_RMX2185-user
+    setup_rbe_vars
+    # setup_ccache_vars
+    # lunch lineage_RMX2185-user
 
     export INSTALL_MOD_STRIP=1
     export BOARD_USES_MTK_HARDWARE=true
@@ -122,14 +122,14 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-    mmma frameworks/base/packages/SystemUI:SystemUI
-    cd out/target/product/RMX2185
-    7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
-    xc -c SystemUI.7z
+    # mmma frameworks/base/packages/SystemUI:SystemUI
+    # cd out/target/product/RMX2185
+    # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
+    # xc -c SystemUI.7z
 
-    save_cache
+    # save_cache
 
-    # mka bacon
+    brunch RMX2185 user
 }
 
 upload_src() {

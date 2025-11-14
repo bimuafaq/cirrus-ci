@@ -110,7 +110,8 @@ EOF
 
 build_src() {
     source build/envsetup.sh
-    setup_rbe_vars
+    # setup_rbe_vars
+    setup_ccache_vars
     lunch lineage_RMX2185-user
 
     export INSTALL_MOD_STRIP=1
@@ -125,6 +126,8 @@ build_src() {
     cd out/target/product/RMX2185
     7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
     xc -c SystemUI.7z
+
+    save_cache
 
     # mka bacon
 }

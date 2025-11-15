@@ -39,7 +39,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
 
     rm -rf packages/apps/Trebuchet
-    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b rovars-patch-1 --depth=1
+    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b exthm-11 --depth=1
 
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1

@@ -114,8 +114,8 @@ build_src() {
     git clone https://github.com/bimuafaq/android_packages_apps_Launcher3 packages/apps/Launcher3 --depth=1
 
     source build/envsetup.sh
-    setup_rbe_vars
-    # setup_ccache_vars
+    #setup_rbe_vars
+    setup_ccache_vars
     lunch lineage_RMX2185-user
 
     export INSTALL_MOD_STRIP=1

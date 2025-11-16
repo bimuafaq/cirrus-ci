@@ -53,7 +53,7 @@ setup_src() {
     cd -
 
     git clone https://github.com/MrSluffy/vendor_OnePlusLauncher vendor/oplauncher --depth=1
-    echo "$(call inherit-product, vendor/oplauncher/OPLauncher.mk)" >> device/realme/RMX2185/device.mk
+    sed -i '$a '$(call inherit-product, vendor/oplauncher/OPLauncher.mk)'' device/realme/RMX2185/lineage_RMX2185.mk
 
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
 

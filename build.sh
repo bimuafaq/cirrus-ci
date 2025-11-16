@@ -52,9 +52,6 @@ setup_src() {
     git am $x_patch/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
     cd -
 
-    git clone https://github.com/MrSluffy/vendor_OnePlusLauncher vendor/oplauncher --depth=1
-    sed -i '$a '$(call inherit-product, vendor/oplauncher/OPLauncher.mk)'' device/realme/RMX2185/lineage_RMX2185.mk
-
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
 
     list_repos() {
@@ -112,6 +109,9 @@ EOF
 }
 
 build_src() {
+    git clone https://github.com/MrSluffy/vendor_OnePlusLauncher vendor/oplauncher --depth=1
+    echo "$(call inherit-product, vendor/oplauncher/OPLauncher.mk)" >> device/realme/RMX2185/lineage_RMX2185.mk
+
     source build/envsetup.sh
     setup_rbe_vars
     lunch lineage_RMX2185-user

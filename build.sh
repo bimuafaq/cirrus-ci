@@ -52,6 +52,9 @@ setup_src() {
     git am $x_patch/android_packages_apps_LineageParts/0001-Remove_Analytics.patch
     cd -
 
+    git clone https://github.com/MrSluffy/vendor_OnePlusLauncher vendor/oplauncher --depth=1
+    echo "$(call inherit-product, vendor/oplauncher/OPLauncher.mk)" >> device/realme/RMX2185/device.mk
+
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
 
     list_repos() {
@@ -109,10 +112,6 @@ EOF
 }
 
 build_src() {
-    #rm -rf packages/apps/Launcher3
-    #rm -rf packages/apps/Trebuchet
-    #git clone https://github.com/bimuafaq/android_packages_apps_Launcher3 packages/apps/Launcher3 --depth=1
-
     source build/envsetup.sh
     setup_rbe_vars
     lunch lineage_RMX2185-user
@@ -130,12 +129,7 @@ build_src() {
     # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
     # xc -c SystemUI.7z
 
-    mmma packages/apps/Trebuchet:TrebuchetQuickStep
-    cd out/target/product/RMX2185
-    7z a -r Launcher3.7z system/*/*/*/*QuickStep.apk
-    xc -c Launcher3.7z
-
-    # mka bacon
+    mka bacon
 }
 
 upload_src() {

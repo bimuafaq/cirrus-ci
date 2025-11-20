@@ -12,7 +12,7 @@ setup_src() {
     retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
 
     rm -rf external/AOSmium-prebuilt 
-    rm -rf external/hardened_malloc
+    #rm -rf external/hardened_malloc
     rm -rf prebuilts/AuroraStore
     rm -rf prebuilts/prebuiltapks
 
@@ -38,7 +38,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
 
     rm -rf packages/apps/Trebuchet
-    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b exthm-11 --depth=1
+    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b mem --depth=1
 
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1
@@ -46,29 +46,28 @@ setup_src() {
     rm -rf packages/apps/LineageParts
     git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
-    git clone https://github.com/MrSluffy/vendor_OnePlusLauncher vendor/oplauncher --depth=1
-
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
 }
 
 build_src() {
     source build/envsetup.sh
     setup_rbe
-    lunch lineage_RMX2185-user
 
     export OWN_KEYS_DIR=$PWD/xx/keys
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
-    
-    # mmma packages/apps/Trebuchet:TrebuchetQuickStep
-    # cd out/target/product/RMX2185
-    # 7z a -r launcher3.7z system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
-    # xc -c launcher3.7z
 
-    mmma frameworks/base/packages/SystemUI:SystemUI
+    lunch lineage_RMX2185-user
+    
+    mmma packages/apps/Trebuchet:TrebuchetQuickStep
     cd out/target/product/RMX2185
-    7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
-    xc -c SystemUI.7z
+    7z a -r launcher3.7z system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
+    xc -c launcher3.7z
+
+    # mmma frameworks/base/packages/SystemUI:SystemUI
+    # cd out/target/product/RMX2185
+    # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
+    # xc -c SystemUI.7z
 
     # mka bacon
 }

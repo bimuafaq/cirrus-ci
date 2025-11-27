@@ -12,7 +12,7 @@ setup_src() {
     retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
 
     rm -rf external/AOSmium-prebuilt 
-    #rm -rf external/hardened_malloc
+    rm -rf external/hardened_malloc
     rm -rf prebuilts/AuroraStore
     rm -rf prebuilts/prebuiltapks
 
@@ -32,13 +32,13 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
-    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b xx --depth=1
+    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
 
     rm -rf packages/apps/Settings
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
 
     rm -rf packages/apps/Trebuchet
-    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b mem --depth=1
+    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b exthm-11 --depth=1
 
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1
@@ -59,15 +59,15 @@ build_src() {
 
     lunch lineage_RMX2185-user
     
-    mmma packages/apps/Trebuchet:TrebuchetQuickStep
-    cd out/target/product/RMX2185
-    7z a -r launcher3.7z system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
-    xc -c launcher3.7z
-
-    # mmma frameworks/base/packages/SystemUI:SystemUI
+    # mmma packages/apps/Trebuchet:TrebuchetQuickStep
     # cd out/target/product/RMX2185
-    # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
-    # xc -c SystemUI.7z
+    # 7z a -r launcher3.7z system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
+    # xc -c launcher3.7z
+
+    mmma frameworks/base/packages/SystemUI:SystemUI
+    cd out/target/product/RMX2185
+    7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
+    xc -c SystemUI.7z
 
     # mka bacon
 }

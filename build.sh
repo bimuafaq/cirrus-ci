@@ -64,12 +64,12 @@ build_src() {
     # 7z a -r launcher3.7z system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
     # xc -c launcher3.7z
 
-    mmma frameworks/base/packages/SystemUI:SystemUI
-    cd out/target/product/RMX2185
-    7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
-    xc -c SystemUI.7z
+    # mmma frameworks/base/packages/SystemUI:SystemUI
+    # cd out/target/product/RMX2185
+    # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
+    # xc -c SystemUI.7z
 
-    # mka bacon
+    mka bacon
 }
 
 upload_src() {

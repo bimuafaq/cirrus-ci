@@ -20,7 +20,7 @@ setup_src() {
     git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
 
     rm -rf lineage-sdk
-    git clone https://github.com/bimuafaq/android_lineage-sdk lineage-sdk -b lineage-18.1 --depth=1
+    git clone https://github.com/bimuafaq/android_lineage-sdk lineage-sdk -b bimuafaq-patch-1 --depth=1
 
     rm -rf build/make
     git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
@@ -69,7 +69,13 @@ build_src() {
     # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
     # xc -c SystemUI.7z
 
-    mka bacon
+    mmma lineage-sdk:org.lineageos.platform.sdk
+    cd out/target/product/RMX2185
+    ls system/framework
+    7z a -r lineage-sdk.7z system/framework/org.lineageos.platform.jar
+    xc -c lineage-sdk.7z
+
+    # mka bacon
 }
 
 upload_src() {

@@ -69,7 +69,7 @@ build_src() {
     # 7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
     # xc -c SystemUI.7z
 
-    mmma lineage-sdk:org.lineageos.platform.sdk
+    m org.lineageos.platform
     cd out/target/product/RMX2185
     ls system/framework
     7z a -r lineage-sdk.7z system/framework/org.lineageos.platform.jar
@@ -91,7 +91,7 @@ upload_src() {
         gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
     fi
 
-    gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
+    #gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
 
     echo "$ROM_X"
     MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"

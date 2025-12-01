@@ -67,7 +67,6 @@ build_src() {
     m org.lineageos.platform
     m SystemUI
     cd out/target/product/RMX2185
-    ls system/framework
     7z a -r lineage-sdk.7z system/framework/org.lineageos.platform.jar
     7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
     xc -c SystemUI.7z

@@ -52,8 +52,60 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
-    exit 1
+
+    git clone -q https://github.com/rovars/build xxx
+    git clone -q https://codeberg.org/lin18-microG/z_patches -b lin-18.1-microG zzz
+
+    z_patch=$PWD/zzz
+    x_patch=$PWD/xxx/Patches/LineageOS-18.1
     
+list_repos() {
+cat <<EOF
+external/conscrypt:patch_703_conscrypt.patch
+external/icu:patch_704_icu.patch
+external/neven:patch_705_neven.patch
+frameworks/rs:patch_706_rs.patch
+frameworks/ex:patch_707_ex.patch
+frameworks/opt/net/voip:patch_708_voip.patch
+hardware/qcom-caf/common:patch_709_qc-common.patch
+lineage-sdk:patch_710_lineage-sdk.patch
+packages/apps/FMRadio:patch_711_FMRadio.patch
+packages/apps/Gallery2:patch_712_Gallery2.patch
+vendor/qcom/opensource/fm-commonsys:patch_716_fm-commonsys.patch
+vendor/nxp/opensource/commonsys/packages/apps/Nfc:patch_717_nxp-Nfc.patch
+vendor/qcom/opensource/libfmjni:patch_718_libfmjni.patch
+EOF
+    }
+
+    list_repos | while read STR; do
+        [ -z "$STR" ] && continue
+        DIR="${STR%%:*}"
+        PTC="${STR##*:}"      
+        cd "$DIR"
+        git am < "$z_patch/$PTC"
+        cd -
+    done
+
+    list_constify_patches() {
+cat <<EOF
+art:android_art/0001-constify_JNINativeMethod.patch
+frameworks/base:android_frameworks_base/0017-constify_JNINativeMethod.patch
+libcore:android_libcore/0002-constify_JNINativeMethod.patch
+packages/apps/Bluetooth:android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch
+packages/apps/Nfc:android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch
+EOF
+    }
+
+    list_constify_patches | while read STR; do
+        [ -z "$STR" ] && continue
+        DIR="${STR%%:*}"
+        PTC="${STR##*:}"        
+        cd "$DIR"
+        git am < "$x_patch/$PTC"
+        cd -
+    done
+
+    rm -rf xxx zzz
 }
 
 build_src() {

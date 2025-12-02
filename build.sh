@@ -26,13 +26,18 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
 
     rm -rf system/core
-    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1 --depth=1
+    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1
+    cd system/core
+    git revert --no-edit 4c5d682b0134310ece17eba2fa21854d2c57397c
+    cd -
 
     rm -rf vendor/lineage
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
 
     rm -rf frameworks/base
     git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
+    sed -i 's#\(<bool[^>]name="config_cellBroadcastAppLinks"[^>]>\)true\(<\/bool>\)#\1false\2#g' frameworks/base/core/res/res/values/config.xml
+    grep -n 'config_cellBroadcastAppLinks' frameworks/base/core/res/res/values/config.xml
 
     rm -rf packages/apps/Settings
     git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
@@ -47,6 +52,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
+    
 }
 
 build_src() {
@@ -68,12 +74,15 @@ build_src() {
     m SystemUI
     m LineageParts
     cd out/target/product/RMX2185
-    7z a -r lineage-sdk.7z system/framework/org.lineageos.platform.jar
-    7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
-    7z a -r lineage-part.7z system/priv-app/LineageParts/LineageParts.apk
-    xc -c SystemUI.7z
-    xc -c lineage-sdk.7z
-    xc -c lineage-part.7z
+    VERSION=$(date +%y%m%d-%H%M)
+    echo "id=system_push_test
+name=system test
+version=$VERSION
+versionCode=$VERSION
+author=system
+description=system test" > module.prop
+    zip -r system-test.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
+    xc -c system-test.zip
 
     # mka bacon
 }

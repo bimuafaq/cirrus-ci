@@ -36,7 +36,7 @@ setup_src() {
 
     rm -rf frameworks/base
     git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
-    sed -i 's#\(<bool[^>]name="config_cellBroadcastAppLinks"[^>]>\)true\(<\/bool>\)#\1false\2#g' frameworks/base/core/res/res/values/config.xml
+    sed -i 's#\(<bool[^>]*name="config_cellBroadcastAppLinks"[^>]*>\)\s*true\s*\(</bool>\)#\1false\2#g' frameworks/base/core/res/res/values/config.xml
     grep -n 'config_cellBroadcastAppLinks' frameworks/base/core/res/res/values/config.xml
 
     rm -rf packages/apps/Settings
@@ -52,6 +52,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
+    exit 1
     
 }
 
@@ -64,27 +65,27 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     lunch lineage_RMX2185-user
-    
-    # mmma packages/apps/Trebuchet:TrebuchetQuickStep
+
+    # m TrebuchetQuickStep
     # cd out/target/product/RMX2185
-    # 7z a -r launcher3.7z system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
-    # xc -c launcher3.7z
+    # zip launcher3.zip system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
+    # xc -c launcher3.zip
 
-    m org.lineageos.platform
-    m SystemUI
-    m LineageParts
-    cd out/target/product/RMX2185
-    VERSION=$(date +%y%m%d-%H%M)
-    echo "id=system_push_test
-name=system test
-version=$VERSION
-versionCode=$VERSION
-author=system
-description=system test" > module.prop
-    zip -r system-test.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
-    xc -c system-test.zip
+    # m org.lineageos.platform
+    # m SystemUI
+    # m LineageParts
+    # cd out/target/product/RMX2185
+    # VERSION=$(date +%y%m%d-%H%M)
+    # echo "id=system_push_test
+# name=system test
+# version=$VERSION
+# versionCode=$VERSION
+# author=system
+# description=system test" > module.prop
+    # zip -r system-test.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
+    # xc -c system-test.zip
 
-    # mka bacon
+    mka bacon
 }
 
 upload_src() {

@@ -56,54 +56,63 @@ setup_src() {
     git clone -q https://github.com/rovars/build xxx
     git clone -q https://codeberg.org/lin18-microG/z_patches -b lin-18.1-microG zzz
 
-    z_patch=$PWD/zzz
-    x_patch=$PWD/xxx/Patches/LineageOS-18.1
+    z_patch="$PWD/zzz"
+    x_patch="$PWD/xxx/Patches/LineageOS-18.1"
+
+list_merged_repos() {
+cat <<EOF
+Z:external/conscrypt:patch_703_conscrypt.patch
+Z:external/icu:patch_704_icu.patch
+Z:external/neven:patch_705_neven.patch
+Z:frameworks/rs:patch_706_rs.patch
+Z:frameworks/ex:patch_707_ex.patch
+Z:frameworks/opt/net/voip:patch_708_voip.patch
+Z:hardware/qcom-caf/common:patch_709_qc-common.patch
+Z:lineage-sdk:patch_710_lineage-sdk.patch
+Z:packages/apps/FMRadio:patch_711_FMRadio.patch
+Z:packages/apps/Gallery2:patch_712_Gallery2.patch
+Z:vendor/qcom/opensource/fm-commonsys:patch_716_fm-commonsys.patch
+Z:vendor/nxp/opensource/commonsys/packages/apps/Nfc:patch_717_nxp-Nfc.patch
+Z:vendor/qcom/opensource/libfmjni:patch_718_libfmjni.patch
+X:art:android_art/0001-constify_JNINativeMethod.patch
+X:frameworks/base:android_frameworks_base/0017-constify_JNINativeMethod.patch
+X:libcore:android_libcore/0002-constify_JNINativeMethod.patch
+X:packages/apps/Bluetooth:android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch
+X:packages/apps/Nfc:android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch
+EOF
+}
+
+list_merged_repos | while read STR; do
+    [ -z "$STR" ] && continue
     
-list_repos() {
-cat <<EOF
-external/conscrypt:patch_703_conscrypt.patch
-external/icu:patch_704_icu.patch
-external/neven:patch_705_neven.patch
-frameworks/rs:patch_706_rs.patch
-frameworks/ex:patch_707_ex.patch
-frameworks/opt/net/voip:patch_708_voip.patch
-hardware/qcom-caf/common:patch_709_qc-common.patch
-lineage-sdk:patch_710_lineage-sdk.patch
-packages/apps/FMRadio:patch_711_FMRadio.patch
-packages/apps/Gallery2:patch_712_Gallery2.patch
-vendor/qcom/opensource/fm-commonsys:patch_716_fm-commonsys.patch
-vendor/nxp/opensource/commonsys/packages/apps/Nfc:patch_717_nxp-Nfc.patch
-vendor/qcom/opensource/libfmjni:patch_718_libfmjni.patch
-EOF
-    }
+    TYPE="${STR%%:*}"
+    REMAINDER="${STR#*:}"
+    
+    DIR="${REMAINDER%%:*}"
+    PTC="${REMAINDER#*:}"
 
-    list_repos | while read STR; do
-        [ -z "$STR" ] && continue
-        DIR="${STR%%:*}"
-        PTC="${STR##*:}"      
+    if [ "$TYPE" == "Z" ]; then
+        SOURCE_PATH="$z_patch"
+    elif [ "$TYPE" == "X" ]; then
+        SOURCE_PATH="$x_patch"
+    else
+        continue
+    fi
+
+    echo "Applying $PTC to $DIR"
+    
+    if [ -d "$DIR" ]; then
         cd "$DIR"
-        git am < "$z_patch/$PTC"
-        cd -
-    done
-
-    list_constify_patches() {
-cat <<EOF
-art:android_art/0001-constify_JNINativeMethod.patch
-frameworks/base:android_frameworks_base/0017-constify_JNINativeMethod.patch
-libcore:android_libcore/0002-constify_JNINativeMethod.patch
-packages/apps/Bluetooth:android_packages_apps_Bluetooth/0001-constify_JNINativeMethod.patch
-packages/apps/Nfc:android_packages_apps_Nfc/0001-constify_JNINativeMethod.patch
-EOF
-    }
-
-    list_constify_patches | while read STR; do
-        [ -z "$STR" ] && continue
-        DIR="${STR%%:*}"
-        PTC="${STR##*:}"        
-        cd "$DIR"
-        git am < "$x_patch/$PTC"
-        cd -
-    done
+        if [ -f "$SOURCE_PATH/$PTC" ]; then
+            git am < "$SOURCE_PATH/$PTC"
+        else
+            echo "Error: Patch file not found: $SOURCE_PATH/$PTC"
+        fi
+        cd - > /dev/null
+    else
+        echo "Warning: Directory not found: $DIR"
+    fi
+done
 
     rm -rf xxx zzz
 }

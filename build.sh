@@ -66,11 +66,14 @@ build_src() {
 
     m org.lineageos.platform
     m SystemUI
+    m LineageParts
     cd out/target/product/RMX2185
     7z a -r lineage-sdk.7z system/framework/org.lineageos.platform.jar
     7z a -r SystemUI.7z system/system_ext/priv-app/SystemUI/SystemUI.apk
+    7z a -r lineage-part.7z system/priv-app/LineageParts/LineageParts.apk
     xc -c SystemUI.7z
     xc -c lineage-sdk.7z
+    xc -c lineage-part.7z
 
     # mka bacon
 }

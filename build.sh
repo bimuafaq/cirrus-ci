@@ -143,11 +143,11 @@ version=$VERSION
 versionCode=$VERSION
 author=system
 description=system test" > module.prop
-    # zip -r system-test.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
+    # zip -r system-test-$VERSION.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
     zip -r system-test.zip system/system_ext/priv-app/SystemUI/SystemUI.apk module.prop
     xc -c system-test.zip
 
-    #mka bacon
+    # mka bacon
 }
 
 upload_src() {

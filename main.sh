@@ -29,7 +29,7 @@ setup_cache() {
 
     echo "Attempting to restore ccache from rclone..."
     if retry_rc rclone copy "$rclonedir/$rclonefile" "." &>/dev/null; then
-        tar -xzf "$local_tarball"
+        tar -xzf "$rclonefile"
         rm -rf "$rclonefile"
         echo "ccache restored successfully to $CCACHE_DIR"
         xc -s2 "(CI: ccache restored)"

@@ -6,7 +6,7 @@ env:
   rcloneconfig: "ENCRYPTED[!7f40638e883461d6f53ce7505cd59a6bbbd8a27a2038ea8dbb026ccd970cb84c18fedce91aa7ee134e86e92723266dba!]"
   tokenpat: "ENCRYPTED[!7e2f6c972d796f300f680d14570b597514746b69c84bfbaed5e0291b3e16b5a5e57baba7d1a039fdb8011c55cf140ed7!]"
   rclonedir: "me:rom"
-  rclonefile: "lin_18_test.tar.gz"
+  rclonefile: "lin_18.tar.gz"
 
 task:
   name: "RBE ROM"

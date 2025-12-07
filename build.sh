@@ -117,8 +117,7 @@ done
     rm -rf xxx zzz
 }
 
-system_push_test() {
-    setup_cache
+system_push_test() {   
     # m TrebuchetQuickStep
     # cd out/target/product/RMX2185
     # zip launcher3.zip system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
@@ -137,8 +136,7 @@ author=system
 description=system test" > module.prop
     # zip -r system-test-$VERSION.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
     zip -r system-test-$VERSION.zip system/system_ext/priv-app/SystemUI/SystemUI.apk module.prop
-    xc -c system-test-$VERSION.zip
-    save_cache
+    xc -c system-test-$VERSION.zip    
 }
 
 build_src() {
@@ -150,10 +148,12 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     lunch lineage_RMX2185-user
-    
-    system_push_test
 
-    # mka bacon
+    setup_cache
+    # system_push_test
+    save_cache
+
+    mka bacon
 }
 
 upload_src() {

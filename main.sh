@@ -18,11 +18,19 @@ retry_rc() {
     return 1
 }
 
-setup_cache() {
-    cd /tmp
+_ccache_env() {
     export USE_CCACHE=1
     export CCACHE_EXEC="$(command -v ccache)"
     export CCACHE_DIR="/tmp/ccache"
+}
+
+setup_cache() {
+    if [ "$use_ccache" != "true" ]; then
+        echo "Skipping setup_cache (use_ccache is not true)"
+        return 0
+    fi
+    cd /tmp
+    _ccache_env
     mkdir -p "$CCACHE_DIR"
     ccache -M 50G -F 0 &>/dev/null
     ccache -o compression=true &>/dev/null
@@ -42,6 +50,10 @@ setup_cache() {
 }
 
 save_cache() {
+    if [ "$use_ccache" != "true" ]; then
+        echo "Skipping save_cache (use_ccache is not true)"
+        return 0
+    fi
     cd /tmp
     export CCACHE_DISABLE=1
     echo "Saving ccache..."
@@ -52,7 +64,6 @@ save_cache() {
     tar -czf "$rclonefile" ccache --warning=no-file-changed || {
         echo "Failed to create ccache archive!"
         xc -x "(CI: ccache archive creation failed)"
-        cd /tmp/cirrus-ci-build
         return 1
     }
 
@@ -62,8 +73,7 @@ save_cache() {
         xc -s2 "(CI: ccache saved)"
     else
         echo "Failed to upload ccache archive!"
-        xc -s2 "(CI: ccache save failed)"
-        cd /tmp/cirrus-ci-build
+        xc -s2 "(CI: ccache save failed)"        
         return 1
     fi
     cd /tmp/cirrus-ci-build

@@ -117,42 +117,49 @@ done
     rm -rf xxx zzz
 }
 
-system_push_test() {   
-    m TrebuchetQuickStep
-    cd out/target/product/RMX2185
-    zip launcher3.zip system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
-    xc -c launcher3.zip
+system_push_test() {
+    VERSION=$(date +%y%m%d-%H%M)
+    ZIPNAME="system-test-$VERSION.zip"
+    OUT="out/target/product/RMX2185"
 
     # m org.lineageos.platform
-    m SystemUI
+    # m SystemUI
     # m LineageParts
-    cd out/target/product/RMX2185
-    VERSION=$(date +%y%m%d-%H%M)
-    echo "id=system_push_test
-name=system test
-version=$VERSION
-versionCode=$VERSION
-author=system
+    m TrebuchetQuickStep
+
+    echo -e "id=system_push_test\n\
+name=system test\n\
+version=$VERSION\n\
+versionCode=$VERSION\n\
+author=system\n\
 description=system test" > module.prop
-    # zip -r system-test-$VERSION.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
-    # zip -r system-test-$VERSION.zip system/system_ext/priv-app/SystemUI/SystemUI.apk module.prop
-    # xc -c system-test-$VERSION.zip
-    save_cache
+
+    zip "launcher3.zip" "$OUT/system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk"
+    xc -c "launcher3.zip"
+
+    # zip -r "$ZIPNAME" "module.prop" \
+        "$OUT/system/framework/org.lineageos.platform.jar" \
+        "$OUT/system/system_ext/priv-app/SystemUI/SystemUI.apk" \
+        "$OUT/system/priv-app/LineageParts/LineageParts.apk"
+    # zip -r "$ZIPNAME" "module.prop" \
+        "$OUT/system/system_ext/priv-app/SystemUI/SystemUI.apk"
+
+    # xc -c "$ZIPNAME"
 }
 
 build_src() {
     source build/envsetup.sh
+    [ "$use_ccache" = "true" ] && _ccache_env
     # setup_rbe
-    setup_cache
 
     export OWN_KEYS_DIR=$PWD/xx/keys
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     lunch lineage_RMX2185-user
-    system_push_test
+    # system_push_test
 
-    # mka bacon && save_cache
+    mka bacon
 }
 
 upload_src() {  
@@ -168,7 +175,7 @@ upload_src() {
         gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
     fi
 
-    #gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
+    # gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
 
     echo "$ROM_X"
     MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"

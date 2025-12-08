@@ -7,9 +7,10 @@ env:
   tokenpat: "ENCRYPTED[!7e2f6c972d796f300f680d14570b597514746b69c84bfbaed5e0291b3e16b5a5e57baba7d1a039fdb8011c55cf140ed7!]"
   rclonedir: "me:rom"
   rclonefile: "lin_18.tar.gz"
+  use_ccache: "true"
 
 task:
-  name: "RBE ROM"
+  name: "just for fun"
   timeout_in: 120m
   container:
     image: ghcr.io/rovars/docker:ubuntu
@@ -23,8 +24,10 @@ task:
     - echo "$rcloneconfig" > ~/.rclone.conf
     - rm -rf .git
     - ./main.sh sync
+  setup_ccache_script: ./main.sh setup_cache
   build_script: ./main.sh build
   upload_script: ./main.sh upload
+  save_ccache_script: ./main.sh save_cache
 
   on_failure:
     notiferror_script:

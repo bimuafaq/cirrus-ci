@@ -118,10 +118,10 @@ done
 }
 
 system_push_test() {   
-    # m TrebuchetQuickStep
-    # cd out/target/product/RMX2185
-    # zip launcher3.zip system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
-    # xc -c launcher3.zip
+    m TrebuchetQuickStep
+    cd out/target/product/RMX2185
+    zip launcher3.zip system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk
+    xc -c launcher3.zip
 
     # m org.lineageos.platform
     m SystemUI
@@ -135,8 +135,8 @@ versionCode=$VERSION
 author=system
 description=system test" > module.prop
     # zip -r system-test-$VERSION.zip system/framework/org.lineageos.platform.jar system/system_ext/priv-app/SystemUI/SystemUI.apk system/priv-app/LineageParts/LineageParts.apk module.prop
-    zip -r system-test-$VERSION.zip system/system_ext/priv-app/SystemUI/SystemUI.apk module.prop
-    xc -c system-test-$VERSION.zip
+    # zip -r system-test-$VERSION.zip system/system_ext/priv-app/SystemUI/SystemUI.apk module.prop
+    # xc -c system-test-$VERSION.zip
     save_cache
 }
 

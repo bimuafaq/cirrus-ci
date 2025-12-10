@@ -51,6 +51,9 @@ setup_src() {
     rm -rf packages/apps/LineageParts
     git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
 
+    rm -rf frameworks/opt/telephony
+    git clone https://github.com/bimuafaq/android_frameworks_opt_telephony frameworks/opt/telephony -b lineage-18.1 --depth=1
+
     patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
 }
 
@@ -100,8 +103,8 @@ _m_settings() {
 
 build_src() {
     source build/envsetup.sh
-    [ "$use_ccache" = "true" ] && _ccache_env
-    # setup_rbe
+    _ccache_env
+    # _use_rbe
 
     export OWN_KEYS_DIR=$PWD/xx/keys
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
@@ -130,7 +133,7 @@ upload_src() {
         gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
     fi
 
-    gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
+    # gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
 
     echo "$ROM_X"
     MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"

@@ -6,10 +6,11 @@ env:
   rcloneconfig: "ENCRYPTED[!7f40638e883461d6f53ce7505cd59a6bbbd8a27a2038ea8dbb026ccd970cb84c18fedce91aa7ee134e86e92723266dba!]"
   tokenpat: "ENCRYPTED[!7e2f6c972d796f300f680d14570b597514746b69c84bfbaed5e0291b3e16b5a5e57baba7d1a039fdb8011c55cf140ed7!]"
   rclonedir: "me:rom"
-  rclonefile: "ccache-losq.tar.gz"
+  rclonefile: "lin_18.tar.gz"
+  use_ccache: "true"
 
 task:
-  name: "Build"
+  name: "just for fun"
   timeout_in: 120m
   container:
     image: ghcr.io/rovars/docker:ubuntu
@@ -21,14 +22,15 @@ task:
     - echo "$credensial" > ~/.git-credentials
     - echo "$gitconfigs" > ~/.gitconfig
     - echo "$rcloneconfig" > ~/.rclone.conf
+    - rm -rf .git
     - ./main.sh sync
-  build_script: 
-    - ./main.sh build
-  upload_script:
-    - ./main.sh upload
+  setup_ccache_script: ./main.sh setup_cache
+  build_script: ./main.sh build
+  upload_script: ./main.sh upload
+  save_ccache_script: ./main.sh save_cache
 
   on_failure:
     notiferror_script:
       - xc -x "Build Failed!"
-      - xc -c "$SRC_DIR/out/error.log"
-      - cat "$SRC_DIR/out/error.log"
+      - xc -c out/error.log
+      - cat out/error.log

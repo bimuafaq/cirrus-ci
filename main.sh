@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
-source "$PWD/build.sh"
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/build.sh"
 
 export NINJA_HIGHMEM_NUM_JOBS=1
 export SKIP_ABI_CHECKS=true
@@ -16,50 +18,68 @@ retry_rc() {
     return 1
 }
 
-setup_ccache_vars() {
+_ccache_env() {
     export USE_CCACHE=1
     export CCACHE_EXEC="$(command -v ccache)"
-    export CCACHE_DIR="$HOME/.ccache"
+    export CCACHE_DIR="/tmp/ccache"
+}
+
+setup_cache() {
+    if [ "$use_ccache" != "true" ]; then
+        echo "Skipping setup_cache (use_ccache is not true)"
+        return 0
+    fi
+    cd /tmp
+    _ccache_env
     mkdir -p "$CCACHE_DIR"
     ccache -M 50G -F 0 &>/dev/null
     ccache -o compression=true &>/dev/null
 
-    cd "$HOME"
-    if retry_rc rclone copy "$rclonedir/$rclonefile" . &>/dev/null; then
-        tar -xzf "$rclonefile" -C .
-        rm -f "$rclonefile"
-        echo "===== ccache setup done ====="
-        xc -s2 "( ccache setup done )"
+    echo "Attempting to restore ccache from rclone..."
+    if retry_rc rclone copy "$rclonedir/$rclonefile" "." ; then
+        tar -xzf "$rclonefile"
+        rm -rf "$rclonefile"
+        echo "ccache restored successfully to $CCACHE_DIR"
+        xc -s2 "(CI: ccache restored)"
     else
-        rm -f "$rclonefile"
-        echo "===== no ccache? ah skip ====="
-        xc -s2 "( no ccache? ah skip )"
+        rm -rf "$rclonefile"
+        echo "No ccache archive found. Skipping restore."
+        xc -s2 "(CI: No ccache found)"
     fi
-    cd "$rom_src"
+    cd -
 }
 
 save_cache() {
+    if [ "$use_ccache" != "true" ]; then
+        echo "Skipping save_cache (use_ccache is not true)"
+        return 0
+    fi
+    cd /tmp
     export CCACHE_DISABLE=1
+    echo "Saving ccache..."
     ccache -s
-    ccache --cleanup --zero-stats &>/dev/null
-    cd "$HOME"
-    tar -czf "$rclonefile" -C . .ccache --warning=no-file-changed || {
-        xc -x "create ccache archive failure!"
+    ccache --cleanup --zero-stats
+
+    echo "Creating ccache archive..."    
+    tar -czf "$rclonefile" ccache --warning=no-file-changed || {
+        echo "Failed to create ccache archive!"
+        xc -x "(CI: ccache archive creation failed)"
         return 1
     }
-    if retry_rc rclone copy "$rclonefile" "$rclonedir" &>/dev/null; then
-        rm -f "$rclonefile"
-        echo "===== ccache save success ====="
-        xc -s2 "( ccache save success )"
+
+    echo "Uploading ccache archive to rclone..."
+    if retry_rc rclone copy "$rclonefile" "$rclonedir" ; then
+        echo "ccache saved successfully to $rclonedir"
+        xc -s2 "(CI: ccache saved)"
     else
-        echo "===== ccache save failure ====="
-        xc -s2 "( ccache save failure )"
+        echo "Failed to upload ccache archive!"
+        xc -s2 "(CI: ccache save failed)"        
         return 1
     fi
-    cd "$rom_src"
+    cd -
 }
 
-setup_rbe_vars() {
+_use_rbe() {
     git clone -q https://github.com/rovars/reclient
     unset USE_CCACHE CCACHE_EXEC CCACHE_DIR USE_GOMA
 
@@ -84,9 +104,6 @@ setup_rbe_vars() {
 }
 
 main() {
-    export rom_src="$PWD/src"
-    mkdir -p "$rom_src" && cd "$rom_src"
-
     case "${1:-}" in
         sync)
             xc -s "( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( $CIRRUS_BRANCH )"

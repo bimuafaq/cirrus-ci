@@ -95,6 +95,9 @@ build_src() {
     repopick -t Q_asb_2025-04 || exit 1
     #2025-05-05
     repopick -t Q_asb_2025-05 || exit 1
+
+    chmod +x xx/10/cb.sh
+    source xx/10/cb.sh
  
     export OWN_KEYS_DIR=$PWD/xx/keys
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8

@@ -11,6 +11,9 @@ setup_src() {
 build_src() {    
     source build/envsetup.sh
 
+    git config --global user.email "bimuafaq@duck.com"
+    git config --global user.name "bimuafaq"
+
     repopick -f 378458 || exit 1
     #2023-03-05
     repopick -f 352333 || exit 1

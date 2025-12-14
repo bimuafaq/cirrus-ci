@@ -7,7 +7,6 @@ setup_src() {
     mv xx/10/lin10.xml .repo/local_manifests
     mv xx/10/rev.xml .repo/local_manifests
     repo sync -j8 -c --no-clone-bundle --no-tags
-    patch -p1 < $PWD/xx/10/lin10-*.patch
 }
 
 build_src() {    
@@ -17,7 +16,7 @@ build_src() {
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
-    brunch RMX2185 user
+    brunch RMX2185
 }
 
 upload_src() {  

@@ -6,7 +6,7 @@ setup_src() {
     mkdir -p .repo/local_manifests/
     mv xx/10/lin10.xml .repo/local_manifests
     mv xx/10/rev.xml .repo/local_manifests
-    retry_rc repo sync -j8 -c --no-clone-bundle --no-tags
+    repo sync -j8 -c --no-clone-bundle --no-tags
 }
 
 build_src() {    

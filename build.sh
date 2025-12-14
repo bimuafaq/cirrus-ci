@@ -7,7 +7,7 @@ setup_src() {
     mv xx/10/lin10.xml .repo/local_manifests
     mv xx/10/rev.xml .repo/local_manifests
     repo sync -j8 -c --no-clone-bundle --no-tags
-    patch -p1 < $PWD/xx/1p/lin10-*.patch
+    patch -p1 < $PWD/xx/10/lin10-*.patch
 }
 
 build_src() {    

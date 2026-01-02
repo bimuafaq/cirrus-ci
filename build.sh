@@ -26,10 +26,7 @@ setup_src() {
     git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
 
     rm -rf system/core
-    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1
-    cd system/core
-    git revert --no-edit 4c5d682b0134310ece17eba2fa21854d2c57397c
-    cd -
+    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1 --depth=1
 
     rm -rf vendor/lineage
     git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
@@ -53,8 +50,11 @@ setup_src() {
 
     rm -rf frameworks/opt/telephony
     git clone https://github.com/bimuafaq/android_frameworks_opt_telephony frameworks/opt/telephony -b lineage-18.1 --depth=1
+    
+    patch -p1 < $PWD/xx/11/permissive.patch
 
-    patch -p1 < $PWD/xx/11/allow-permissive-user-build.patch
+    chmod +x $PWD/xx/11/constify.sh
+    source $PWD/xx/11/constify.sh
 }
 
 _m_rovv() {
@@ -66,6 +66,9 @@ _m_rovv() {
 _m_trebuchet() {
     _m_rovv
     m TrebuchetQuickStep
+    cd "$OUT"
+    zip -r TrebuchetQuickStep-A11.zip "system/system_ext/priv-app/TrebuchetQuickStep/TrebuchetQuickStep.apk" "system/system_ext/etc/permissions/com.android.launcher3.xml"
+    xc -c TrebuchetQuickStep-A11.zip && exit 0
     cd "$OUT/system/system_ext/priv-app/TrebuchetQuickStep"
     zip -r launcher3.zip TrebuchetQuickStep.apk
     xc -c launcher3.zip
@@ -103,14 +106,15 @@ _m_settings() {
 
 build_src() {
     source build/envsetup.sh
-    _ccache_env
-    # _use_rbe
+    # _ccache_env
+    _use_rbe
 
     export OWN_KEYS_DIR=$PWD/xx/keys
     sudo ln -s $OWN_KEYS_DIR/releasekey.pk8 $OWN_KEYS_DIR/testkey.pk8
     sudo ln -s $OWN_KEYS_DIR/releasekey.x509.pem $OWN_KEYS_DIR/testkey.x509.pem
 
     lunch lineage_RMX2185-user
+    # make clean
 
     # _m_trebuchet
     # _m_system
@@ -121,24 +125,15 @@ build_src() {
 }
 
 upload_src() {  
-    REPO="rovars/release"
+    REPO="bimuafaq/release"
     RELEASE_TAG="lineage-18.1"
-    ROM_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
-    ROM_X="https://github.com/$REPO/releases/download/$RELEASE_TAG/$(basename "$ROM_FILE")"
+    RELEASE_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
 
     echo "$tokenpat" > tokenpat.txt
-    gh auth login --with-token < tokenpat.txt
-
-    if ! gh release view "$RELEASE_TAG" -R "$REPO" > /dev/null 2>&1; then
-        gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
-    fi
-
-    #gh release upload "$RELEASE_TAG" "$ROM_FILE" -R "$REPO" --clobber || true
-
-    echo "$ROM_X"
-    MSG_XC2="( <a href='https://cirrus-ci.com/task/${CIRRUS_TASK_ID}'>Cirrus CI</a> ) - $CIRRUS_COMMIT_MESSAGE ( <a href='$ROM_X'>$(basename "$CIRRUS_BRANCH")</a> )"
-    xc -s "$MSG_XC2"
+    gh auth login --with-token < tokenpat.txt    
+    # gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
+    # gh release upload "$RELEASE_TAG" "$RELEASE_FILE" -R "$REPO" --clobber || true
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
-    timeout 15m telegram-upload $ROM_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE" || true
+    timeout 15m telegram-upload $RELEASE_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE" || true
 }

@@ -7,7 +7,7 @@ env:
   tokenpat: "ENCRYPTED[!7e2f6c972d796f300f680d14570b597514746b69c84bfbaed5e0291b3e16b5a5e57baba7d1a039fdb8011c55cf140ed7!]"
   rclonedir: "me:rom"
   rclonefile: "lin_17.tar.gz"
-  use_ccache: "true"
+  use_ccache: "false"
 
 task:
   name: "just for fun"

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+export rclonedir="me:rom"
+export rclonefile="lin_18.tar.gz"
+export use_ccache="false"
+
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
 
@@ -124,15 +128,17 @@ build_src() {
     mka bacon
 }
 
-upload_src() {  
-    REPO="bimuafaq/release"
-    RELEASE_TAG="lineage-18.1"
+upload_src() {
+    REPO="bimuafaq/releases"
+    RELEASE_TAG=$(date +%Y%m%d)
     RELEASE_FILE=$(find out/target/product -name "*-RMX*.zip" -print -quit)
+    RELEASE_NAME=$(basename "$RELEASE_FILE")
 
     echo "$tokenpat" > tokenpat.txt
     gh auth login --with-token < tokenpat.txt    
-    # gh release create "$RELEASE_TAG" -t "$RELEASE_TAG" -R "$REPO" --generate-notes
-    # gh release upload "$RELEASE_TAG" "$RELEASE_FILE" -R "$REPO" --clobber || true
+
+    gh release create "$RELEASE_TAG" -t "$RELEASE_NAME" -R "$REPO" --generate-notes
+    gh release upload "$RELEASE_TAG" "$RELEASE_FILE" -R "$REPO" --clobber || true
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
     timeout 15m telegram-upload $RELEASE_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE" || true

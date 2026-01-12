@@ -137,8 +137,8 @@ upload_src() {
     echo "$tokenpat" > tokenpat.txt
     gh auth login --with-token < tokenpat.txt    
 
-    gh release create "$RELEASE_TAG" -t "$RELEASE_NAME" -R "$REPO" --generate-notes
-    gh release upload "$RELEASE_TAG" "$RELEASE_FILE" -R "$REPO" --clobber || true
+    #gh release create "$RELEASE_TAG" -t "$RELEASE_NAME" -R "$REPO" --generate-notes
+    #gh release upload "$RELEASE_TAG" "$RELEASE_FILE" -R "$REPO" --clobber || true
 
     mkdir -p ~/.config && mv xx/config/* ~/.config
     timeout 15m telegram-upload $RELEASE_FILE --to $idtl --caption "$CIRRUS_COMMIT_MESSAGE" || true

@@ -121,12 +121,12 @@ build_src() {
     lunch lineage_RMX2185-user
     # make clean
 
-    _m_trebuchet
+    # _m_trebuchet
     # _m_system
     # _m_systemui
     # _m_settings
 
-    # mka bacon
+    mka bacon
 }
 
 upload_src() {

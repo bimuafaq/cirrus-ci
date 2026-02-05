@@ -63,7 +63,7 @@ setup_src() {
 
 build_src() {
     source build/envsetup.sh
-    # rbe_setup
+    rbe_setup
 
     export OWN_KEYS_DIR="$PWD/xx/keys"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.pk8" "$OWN_KEYS_DIR/testkey.pk8"

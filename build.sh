@@ -55,7 +55,8 @@ setup_src() {
     rm -rf frameworks/opt/telephony
     git clone https://github.com/bimuafaq/android_frameworks_opt_telephony frameworks/opt/telephony -b lineage-18.1 --depth=1
 
-    patch -p1 < $PWD/xx/script/permissive_core.patch
+    patch -p1 -d system/core < $PWD/xx/script/permissive_core.patch
+    patch -p1 -d system/sepolicy < $PWD/xx/script/fix_neverallows_user_builds.patch
 
     source $PWD/xx/script/constify.sh
 }

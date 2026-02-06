@@ -10,7 +10,7 @@ setup_src() {
     git clone -q https://codeberg.org/lin18-microG/local_manifests -b lineage-18.1 .repo/local_manifests
 
     rm -rf .repo/local_manifests/setup*
-    mv xx/device/device.xml .repo/local_manifests/
+    mv xx/script/device.xml .repo/local_manifests/
 
     run_retry repo sync -j8 -c --no-clone-bundle --no-tags
 
@@ -55,10 +55,9 @@ setup_src() {
     rm -rf frameworks/opt/telephony
     git clone https://github.com/bimuafaq/android_frameworks_opt_telephony frameworks/opt/telephony -b lineage-18.1 --depth=1
 
-    patch -p1 < $PWD/xx/device/permissive.patch
+    patch -p1 < $PWD/xx/script/permissive_core.patch
 
-    chmod +x $PWD/xx/device/constify.sh
-    source $PWD/xx/device/constify.sh
+    source $PWD/xx/script/constify.sh
 }
 
 build_src() {
@@ -75,19 +74,36 @@ build_src() {
 
 upload_src() {
     local release_file=$(find out/target/product -name "*-RMX*.zip" -print -quit)
+    local release_name=$(basename "$release_file")
+    local release_tag=$(date +%Y%m%d)
+    local repo_releases="bimuafaq/releases"
 
     if [[ -f "$release_file" ]]; then
-        cp xx/config/* ~/.config
+        if [[ "${UPLOAD_GH}" == "true" && -n "$GH_TOKEN" ]]; then
+            echo "$GH_TOKEN" > tokenpat.txt
+            gh auth login --with-token < tokenpat.txt
+            rm tokenpat.txt
+            
+            tg_post "Uploading to GitHub Releases..."
+            gh release create "$release_tag" -t "$release_name" -R "$repo_releases" --generate-notes || true
+            if gh release upload "$release_tag" "$release_file" -R "$repo_releases" --clobber; then
+                tg_post "GitHub Release upload successful: <a href=\"https://github.com/$repo_releases/releases/tag/$release_tag\">$release_name</a>"
+            else
+                tg_post "GitHub Release upload failed"
+            fi
+        fi
+
+        unzip -q xx/config.zip -d ~/.config
         tg_post "Uploading build result to Telegram..."
         if timeout 15m telegram-upload "$release_file" --to "$TG_CHAT_ID" --caption "$CIRRUS_COMMIT_MESSAGE"; then
-            tg_post "Upload successful"
+            tg_post "Telegram upload successful"
         else
             tg_post "telegram-upload failed"
             return 1
         fi
     else
         tg_post "Build file not found"
-        return 1
+        return 0
     fi
 }
 

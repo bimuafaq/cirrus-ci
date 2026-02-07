@@ -18,6 +18,7 @@ setup_src() {
     rm -rf external/hardened_malloc
     rm -rf prebuilts/AuroraStore
     rm -rf prebuilts/prebuiltapks
+    rm -rf packages/overlays/CaptivePortal204
 
     rm -rf external/chromium-webview
     git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1

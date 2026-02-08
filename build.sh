@@ -65,13 +65,18 @@ build_src() {
     source build/envsetup.sh
     rbe_setup
 
+    export KBUILD_BUILD_USER=android
+    export KBUILD_BUILD_HOST=localhost
+    export BUILD_USERNAME=android
+    export BUILD_HOSTNAME=localhost
+
     export OWN_KEYS_DIR="$PWD/xx/keys"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.pk8" "$OWN_KEYS_DIR/testkey.pk8"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.x509.pem" "$OWN_KEYS_DIR/testkey.x509.pem"
 
     lunch lineage_RMX2185-user
-    source $PWD/xx/script/m.sh system || exit 1
-    # mka bacon
+    # source $PWD/xx/script/m.sh system || exit 1
+    mka bacon
 }
 
 upload_src() {

@@ -46,6 +46,8 @@ setup_src() {
     rm -rf packages/apps/Trebuchet
     git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b wip --depth=1
 
+    rm -rf packages/overlays/Lineage
+    git clone https://github.com/bimuafaq/android_packages_overlays_Lineage packages/overlays/Lineage --depth=1 -b lineage-18.1
 
     rm -rf packages/apps/DeskClock
     git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1
@@ -65,18 +67,19 @@ build_src() {
     source build/envsetup.sh
     rbe_setup
 
-    export KBUILD_BUILD_USER=android
-    export KBUILD_BUILD_HOST=localhost
-    export BUILD_USERNAME=android
-    export BUILD_HOSTNAME=localhost
+    export KBUILD_BUILD_USER=nobody
+    export KBUILD_BUILD_HOST=android-build
+    export BUILD_USERNAME=nobody
+    export BUILD_HOSTNAME=android-build
 
     export OWN_KEYS_DIR="$PWD/xx/keys"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.pk8" "$OWN_KEYS_DIR/testkey.pk8"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.x509.pem" "$OWN_KEYS_DIR/testkey.x509.pem"
 
     lunch lineage_RMX2185-user
+    make LineageOneUiSansFont
     # source $PWD/xx/script/m.sh system || exit 1
-    mka bacon
+    # mka bacon
 }
 
 upload_src() {

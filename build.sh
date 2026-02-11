@@ -13,6 +13,8 @@ setup_src() {
     mv xx/script/device.xml .repo/local_manifests/
 
     run_retry repo sync -j8 -c --no-clone-bundle --no-tags
+    repo grep -l "isLowRamDevice" | cut -d: -f1 | xargs -n 1 dirname | sort -u
+    exit 1
 
     rm -rf external/AOSmium-prebuilt 
     rm -rf external/hardened_malloc
@@ -58,6 +60,12 @@ setup_src() {
     patch -p1 < $PWD/xx/script/permissive.patch
 
     source $PWD/xx/script/constify.sh
+
+    rm -rf kernel/realme/RMX2185
+    git clone https://github.com/rovars/kernel_realme_RMX2185 kernel/realme/RMX2185 --depth=5
+    cd kernel/realme/RMX2185
+    git revert --no-edit a435473e6a45d3b319e793f40fb4cf9c1c269568
+    cd -
 }
 
 build_src() {
@@ -80,18 +88,19 @@ build_src() {
 
 upload_src() {
     local release_file=$(find out/target/product -name "*-RMX*.zip" -print -quit)
-    local release_name=$(basename "$release_file")
+    local release_name=$(basename "$release_file" .zip)
     local release_tag=$(date +%Y%m%d)
     local repo_releases="bimuafaq/releases"
 
+    UPLOAD_GH=${UPLOAD_GH:-true}
+
     if [[ -f "$release_file" ]]; then
-        if [[ "${UPLOAD_GH}" == "true" && -n "$GH_TOKEN" ]]; then
-            echo "$GH_TOKEN" > tokenpat.txt
+        if [[ "${UPLOAD_GH}" == "true" && -n "$GITHUB_TOKEN" ]]; then
+            echo "$GITHUB_TOKEN" > tokenpat.txt
             gh auth login --with-token < tokenpat.txt
             rm tokenpat.txt
-            
             tg_post "Uploading to GitHub Releases..."
-            gh release create "$release_tag" -t "$release_name" -R "$repo_releases" --generate-notes || true
+            gh release create "$release_tag" -t "$release_name" -R "$repo_releases" -F "xx/script/notes.txt" || true
             if gh release upload "$release_tag" "$release_file" -R "$repo_releases" --clobber; then
                 tg_post "GitHub Release upload successful: <a href=\"https://github.com/$repo_releases/releases/tag/$release_tag\">$release_name</a>"
             else
@@ -108,7 +117,7 @@ upload_src() {
             return 1
         fi
     else
-        # tg_post "Build file not found"
+        tg_post "Build file not found"
         return 0
     fi
 }

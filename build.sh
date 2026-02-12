@@ -4,17 +4,19 @@
 source /opt/cirrus_env
 
 setup_src() {
-    repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+    # repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
 
     git clone -q https://github.com/rovars/rom xx
+    chmod +x xx/script/build_vanadium.sh
+    source xx/script/build_vanadium.sh
+    exit 1
+
     git clone -q https://codeberg.org/lin18-microG/local_manifests -b lineage-18.1 .repo/local_manifests
 
     rm -rf .repo/local_manifests/setup*
     mv xx/script/device.xml .repo/local_manifests/
 
     run_retry repo sync -j8 -c --no-clone-bundle --no-tags
-    repo grep -l "isLowRamDevice" | cut -d: -f1 | xargs -n 1 dirname | sort -u
-    exit 1
 
     rm -rf external/AOSmium-prebuilt 
     rm -rf external/hardened_malloc

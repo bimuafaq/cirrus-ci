@@ -94,7 +94,7 @@ upload_src() {
     local release_tag=$(date +%Y%m%d)
     local repo_releases="bimuafaq/releases"
 
-    UPLOAD_GH=${UPLOAD_GH:-true}
+    UPLOAD_GH=false
 
     if [[ -f "$release_file" ]]; then
         if [[ "${UPLOAD_GH}" == "true" && -n "$GITHUB_TOKEN" ]]; then

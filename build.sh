@@ -1,126 +1,90 @@
 #!/bin/bash
 
-# Import automation features from Docker environment
-source /opt/cirrus_env
+set -e
 
-setup_src() {
-    git clone -q https://github.com/rovars/rom xx
-    source xx/script/build_brave.sh
-    exit 1
+TARGET_CPU="arm64"
+ROOT_DIR="$(pwd)"
+ROM_REPO_DIR="$ROOT_DIR/xx"
 
-    repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
+export SISO_REAPI_ADDRESS="nano.buildbuddy.io:443"
+export SISO_REAPI_HEADER="x-buildbuddy-api-key=${RBE_API_KEY}"
+export SISO_CREDENTIAL_HELPER="$ROOT_DIR/siso_helper.sh"
 
-    git clone -q https://codeberg.org/lin18-microG/local_manifests -b lineage-18.1 .repo/local_manifests
+export PYTHONUNBUFFERED=1
+export GSUTIL_ENABLE_LUCI_AUTH=0
+export DEPOT_TOOLS_UPDATE=0
 
-    rm -rf .repo/local_manifests/setup*
-    mv xx/script/device.xml .repo/local_manifests/
+export PATH="$ROOT_DIR/src/brave/vendor/depot_tools:$PATH"
 
-    run_retry repo sync -j8 -c --no-clone-bundle --no-tags
+mkdir -p src
+git clone -q --depth=1 --branch master https://github.com/brave/brave-core.git src/brave
 
-    rm -rf external/AOSmium-prebuilt 
-    rm -rf external/hardened_malloc
-    rm -rf prebuilts/AuroraStore
-    rm -rf prebuilts/prebuiltapks
-    rm -rf packages/overlays/CaptivePortal204
+cd src/brave
+sudo chown -R cirrus:cirrus /usr/local/lib/python3.* /usr/local/bin || true
+npm install
 
-    rm -rf external/chromium-webview
-    git clone -q https://github.com/LineageOS/android_external_chromium-webview external/chromium-webview -b master --depth=1
+cat <<EOF > .env
+projects_chrome_custom_vars='{
+  "rbe_instance": "default_instance",
+  "reapi_address": "nano.buildbuddy.io:443",
+  "reapi_backend_config_path": "$ROOT_DIR/buildbuddy_backend.star",
+  "checkout_pgo_profiles": false
+}'
+EOF
 
-    rm -rf lineage-sdk
-    git clone https://github.com/bimuafaq/android_lineage-sdk lineage-sdk -b lineage-18.1 --depth=1
+npm run init -- --target_os=android --target_arch=$TARGET_CPU --no-history --gclient_verbose --with_issue_44921 -D
 
-    rm -rf build/make
-    git clone https://github.com/bimuafaq/android_build_make build/make -b lineage-18.1 --depth=1
+export PYTHONPATH="$ROOT_DIR/src/brave/script:$ROOT_DIR/src/brave/python:$ROOT_DIR/src/brave/python/brave_chromium_utils:$PYTHONPATH"
 
-    rm -rf system/core
-    git clone https://github.com/bimuafaq/android_system_core system/core -b lineage-18.1 --depth=1
+SCRIPT_DIR="$ROM_REPO_DIR/script/chromium"
+if [ -f "$SCRIPT_DIR/rov.keystore" ]; then
+    CERT_DIGEST=$(keytool -export-cert -alias rov -keystore "$SCRIPT_DIR/rov.keystore" -storepass rovars | sha256sum | cut -d' ' -f1)
+else
+    CERT_DIGEST="000000" 
+fi
 
-    rm -rf vendor/lineage
-    git clone https://github.com/bimuafaq/android_vendor_lineage vendor/lineage -b lineage-18.1 --depth=1
+cd "$ROOT_DIR/src"
+BUILD_DIR="out/Release_android_$TARGET_CPU"
+mkdir -p "$BUILD_DIR"
 
-    rm -rf frameworks/base
-    git clone https://github.com/bimuafaq/android_frameworks_base frameworks/base -b lineage-18.1 --depth=1
-    sed -i 's#\(<bool[^>]*name="config_cellBroadcastAppLinks"[^>]*>\)\s*true\s*\(</bool>\)#\1false\2#g' frameworks/base/core/res/res/values/config.xml
-    grep -n 'config_cellBroadcastAppLinks' frameworks/base/core/res/res/values/config.xml
+gn gen "$BUILD_DIR" --args="
+  import(\"//brave/build/config/android.gni\")
+  target_os = \"android\"
+  target_cpu = \"$TARGET_CPU\"
+  trichrome_certdigest = \"$CERT_DIGEST\"
+  symbol_level = 0
+  is_debug = false
+  is_official_build = false
+  use_remoteexec = true
+  use_siso = true
+  is_clang = true
+  treat_warnings_as_errors = false
+  enable_brave_rewards = false
+  enable_brave_wallet = false
+  enable_brave_vpn = false
+  enable_brave_news = false
+  enable_ai_chat = false
+  enable_brave_talk = false
+  enable_brave_ads = false
+  enable_brave_wayback_machine = false
+"
 
-    rm -rf packages/apps/Settings
-    git clone https://github.com/bimuafaq/android_packages_apps_Settings packages/apps/Settings -b lineage-18.1 --depth=1
+chrt -b 0 autoninja -C "$BUILD_DIR" chrome_public_apk
 
-    rm -rf packages/apps/Trebuchet
-    git clone https://github.com/rovars/android_packages_apps_Trebuchet packages/apps/Trebuchet -b wip --depth=1
+[ -f "$ROM_REPO_DIR/config.zip" ] && unzip -q "$ROM_REPO_DIR/config.zip" -d ~/.config
 
-    rm -rf packages/apps/DeskClock
-    git clone https://github.com/rovars/android_packages_apps_DeskClock packages/apps/DeskClock -b exthm-11 --depth=1
+cd "$BUILD_DIR/apks"
+APKSIGNER=$(find ../../../third_party/android_sdk -name apksigner -type f | head -n 1)
 
-    rm -rf packages/apps/LineageParts
-    git clone https://github.com/bimuafaq/android_packages_apps_LineageParts packages/apps/LineageParts -b lineage-18.1 --depth=1
+if [ -f "$SCRIPT_DIR/rov.keystore" ]; then
+    $APKSIGNER sign --ks "$SCRIPT_DIR/rov.keystore" --ks-pass pass:rovars --ks-key-alias rov --in BravePublic.apk --out Brave-Clean.apk
+    FINAL_APK="Brave-Clean.apk"
+else
+    FINAL_APK="BravePublic.apk"
+fi
 
-    rm -rf frameworks/opt/telephony
-    git clone https://github.com/bimuafaq/android_frameworks_opt_telephony frameworks/opt/telephony -b lineage-18.1 --depth=1
+ARCHIVE="Brave-Clean-$(date +%Y%m%d).tar.gz"
+tar -czf "$ROOT_DIR/$ARCHIVE" "$FINAL_APK"
 
-    patch -p1 < $PWD/xx/script/permissive.patch
-
-    source $PWD/xx/script/constify.sh
-
-    rm -rf kernel/realme/RMX2185
-    git clone https://github.com/rovars/kernel_realme_RMX2185 kernel/realme/RMX2185 --depth=5
-    cd kernel/realme/RMX2185
-    git revert --no-edit a435473e6a45d3b319e793f40fb4cf9c1c269568
-    cd -
-}
-
-build_src() {
-    source build/envsetup.sh
-    rbe_setup
-
-    export KBUILD_BUILD_USER=nobody
-    export KBUILD_BUILD_HOST=android-build
-    export BUILD_USERNAME=nobody
-    export BUILD_HOSTNAME=android-build
-
-    export OWN_KEYS_DIR="$PWD/xx/keys"
-    sudo ln -sf "$OWN_KEYS_DIR/releasekey.pk8" "$OWN_KEYS_DIR/testkey.pk8"
-    sudo ln -sf "$OWN_KEYS_DIR/releasekey.x509.pem" "$OWN_KEYS_DIR/testkey.x509.pem"
-
-    lunch lineage_RMX2185-user
-    # source $PWD/xx/script/m.sh system || exit 1
-    mka bacon
-}
-
-upload_src() {
-    local release_file=$(find out/target/product -name "*-RMX*.zip" -print -quit)
-    local release_name=$(basename "$release_file" .zip)
-    local release_tag=$(date +%Y%m%d)
-    local repo_releases="bimuafaq/releases"
-
-    UPLOAD_GH=false
-
-    if [[ -f "$release_file" ]]; then
-        if [[ "${UPLOAD_GH}" == "true" && -n "$GITHUB_TOKEN" ]]; then
-            echo "$GITHUB_TOKEN" > tokenpat.txt
-            gh auth login --with-token < tokenpat.txt
-            rm tokenpat.txt
-            tg_post "Uploading to GitHub Releases..."
-            gh release create "$release_tag" -t "$release_name" -R "$repo_releases" -F "xx/script/notes.txt" || true
-            if gh release upload "$release_tag" "$release_file" -R "$repo_releases" --clobber; then
-                tg_post "GitHub Release upload successful: <a href=\"https://github.com/$repo_releases/releases/tag/$release_tag\">$release_name</a>"
-            else
-                tg_post "GitHub Release upload failed"
-            fi
-        fi
-
-        unzip -q xx/config.zip -d ~/.config
-        tg_post "Uploading build result to Telegram..."
-        if timeout 15m telegram-upload "$release_file" --to "$TG_CHAT_ID" --caption "$CIRRUS_COMMIT_MESSAGE"; then
-            tg_post "Telegram upload successful"
-        else
-            tg_post "telegram-upload failed"
-            return 1
-        fi
-    else
-        tg_post "Build file not found"
-        return 0
-    fi
-}
-
-main "$@"
+cd "$ROOT_DIR"
+timeout 15m telegram-upload "$ARCHIVE" --to "$TG_CHAT_ID"

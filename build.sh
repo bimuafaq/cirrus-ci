@@ -17,7 +17,7 @@ export DEPOT_TOOLS_UPDATE=0
 export PATH="$ROOT_DIR/src/brave/vendor/depot_tools:$PATH"
 
 mkdir -p src
-git clone -q --depth=1 --branch master https://github.com/brave/brave-core.git src/brave
+git clone -q --depth=1 https://github.com/brave/brave-core.git src/brave
 
 cd src/brave
 sudo chown -R cirrus:cirrus /usr/local/lib/python3.* /usr/local/bin || true
@@ -32,7 +32,7 @@ projects_chrome_custom_vars='{
 }'
 EOF
 
-npm run init -- --target_os=android --target_arch=$TARGET_CPU --no-history --gclient_verbose --with_issue_44921 -D
+npm run init -- --target_os=android --target_arch=$TARGET_CPU --no-history --delete_unused_deps
 
 export PYTHONPATH="$ROOT_DIR/src/brave/script:$ROOT_DIR/src/brave/python:$ROOT_DIR/src/brave/python/brave_chromium_utils:$PYTHONPATH"
 

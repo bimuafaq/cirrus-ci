@@ -4,6 +4,8 @@ env:
   RCLONE_CONFIG: "ENCRYPTED[!7f40638e883461d6f53ce7505cd59a6bbbd8a27a2038ea8dbb026ccd970cb84c18fedce91aa7ee134e86e92723266dba!]"
   gitconfigs: "ENCRYPTED[!5ac5f7e17bbdc60d88ddde16c0fa3108b36bc9810a169cccde65cd85733cf7a43288ccb2f37e97129ec29ba9b4a54e5d!]"
   credensial: "ENCRYPTED[!6912fc4e5cb1786a6b6644ebf2be36c65edee9a49ea4561db2365755753644e9ad86e5160e86ff847b871c750abc2dfe!]"
+  RBE_API_KEY: "ENCRYPTED[!b653b4ecbefa880548075b5b5bad9cda5ef36423cd87d32163910a9599a500dd447133acfcb78bbe8f4e92315c27defd!]"
+  RBE_ENDPOINT: "nano.buildbuddy.io"
   RCLONE_REMOTE: "me:rom"
   # CCACHE_ARCHIVE: "ccache-losr.tar.gz"
   # RBE_CACHE_ARCHIVE: "rbe-aosp-bi.tar.gz"

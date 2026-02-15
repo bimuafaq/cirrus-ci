@@ -70,7 +70,7 @@ setup_src() {
 build_src() {
     source build/envsetup.sh
     rbe_env_setup
-    ccache_env_setup
+    # ccache_env_setup
 
     export KBUILD_BUILD_USER=nobody
     export KBUILD_BUILD_HOST=android-build

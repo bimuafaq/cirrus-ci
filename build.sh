@@ -82,14 +82,9 @@ build_src() {
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.x509.pem" "$OWN_KEYS_DIR/testkey.x509.pem"
 
     lunch lineage_RMX2185-user
-    # source $PWD/xx/script/m.sh system || exit 1
+    # source $PWD/xx/script/mmm.sh system || exit 1
     
-    if [[ "$USE_RBE" == "true" ]]; then
-        # Increase parallel jobs for RBE (BuildBuddy Free Tier limit is ~80)
-        mka bacon -j80
-    else
-        mka bacon
-    fi
+    mka bacon -j90
 }
 
 upload_src() {

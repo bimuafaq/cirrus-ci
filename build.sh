@@ -91,6 +91,7 @@ gn gen "$BUILD_DIR"
 
 chrt -b 0 autoninja -C "$BUILD_DIR" chrome_public_apk
 
+mkdir -p ~/.config
 [ -f "$ROM_REPO_DIR/config.zip" ] && unzip -q "$ROM_REPO_DIR/config.zip" -d ~/.config
 
 cd "$BUILD_DIR/apks"

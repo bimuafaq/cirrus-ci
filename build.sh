@@ -12,7 +12,7 @@ setup_src() {
     rm -rf .repo/local_manifests/setup*
     mv rovx/script/device.xml .repo/local_manifests/
 
-    rovx -c run_retry repo sync -j8 -c --no-clone-bundle --no-tags
+    repo sync -j8 -c --no-clone-bundle --no-tags
 
     rm -rf external/AOSmium-prebuilt 
     rm -rf external/hardened_malloc

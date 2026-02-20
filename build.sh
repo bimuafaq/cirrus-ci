@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Load rovx as a function to allow environment exports
-source rovx
-
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     
@@ -60,7 +57,7 @@ setup_src() {
 
 build_src() {
     source build/envsetup.sh
-    rovx rbe
+    . rovx rbe
 
     export KBUILD_BUILD_USER=nobody
     export KBUILD_BUILD_HOST=android-build

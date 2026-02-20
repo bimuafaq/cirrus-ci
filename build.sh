@@ -5,7 +5,8 @@ source rovx
 
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
-
+    
+    git clone -q https://codeberg.org/lin18-microG/local_manifests -b lineage-18.1 .repo/local_manifests
     git clone -q https://github.com/rovars/rom rovx
 
     rm -rf .repo/local_manifests/setup*

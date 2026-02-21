@@ -1,23 +1,22 @@
 env:
   TG_TOKEN: "ENCRYPTED[!9aa257cad95736f4897f178d239e8a6b387011bada0192a6c220f8ce4b97234be111be60eb3e5d43f227e2cefa8cc20c!]"
   TG_CHAT_ID: "ENCRYPTED[!4508643dc06e496a5bdef35696637b616238ec9af7111e0efb265d7adbee5a3f5890d487225ccdb1d259b189cf5a567d!]"
-  RCLONE_CONFIG: "ENCRYPTED[!7f40638e883461d6f53ce7505cd59a6bbbd8a27a2038ea8dbb026ccd970cb84c18fedce91aa7ee134e86e92723266dba!]"
   gitconfigs: "ENCRYPTED[!5ac5f7e17bbdc60d88ddde16c0fa3108b36bc9810a169cccde65cd85733cf7a43288ccb2f37e97129ec29ba9b4a54e5d!]"
   credensial: "ENCRYPTED[!6912fc4e5cb1786a6b6644ebf2be36c65edee9a49ea4561db2365755753644e9ad86e5160e86ff847b871c750abc2dfe!]"
-  RBE_remote_headers: "ENCRYPTED[!0ae1564c3153b048255403ee4c8ab30a0fad5fd9f899c98572f7c92234cf4bcbdca860b42e917b30645fe110093f842d!]"
-  RBE_service: "rducks.buildbuddy.io:443"
-  RCLONE_REMOTE: "me:rom"
+  # RCLONE_CONFIG: "ENCRYPTED[!7f40638e883461d6f53ce7505cd59a6bbbd8a27a2038ea8dbb026ccd970cb84c18fedce91aa7ee134e86e92723266dba!]"
+  # RCLONE_REMOTE: "me:rom"
   # CCACHE_ARCHIVE: "ccache-losr.tar.gz"
 
 task:
   name: "Build CI"
   timeout_in: 120m
   container:
-    image: ghcr.io/rovars/docker:rxvx
+    image: ghcr.io/rovars/docker:rovx
     cpu: 8
     memory: 32G
     greedy: true
 
+  restore_ccache_script: rovx cache restore
   sync_script:
     - echo "$credensial" > ~/.git-credentials
     - echo "$gitconfigs" > ~/.gitconfig
@@ -26,11 +25,9 @@ task:
     - rovx tg started
     - chmod +x build.sh
     - ./build.sh --sync
-  
-  restore_ccache_script: rovx c restore
   build_script: ./build.sh --build
   upload_script: ./upload.sh
-  save_ccache_script: rovx c save
+  save_ccache_script: rovx cache save
 
   on_failure:
     notiferror_script:

@@ -13,7 +13,7 @@ task:
   name: "Build CI"
   timeout_in: 120m
   container:
-    image: ghcr.io/rovars/docker:rovx
+    image: ghcr.io/rovars/docker:rxvx
     cpu: 8
     memory: 32G
     greedy: true

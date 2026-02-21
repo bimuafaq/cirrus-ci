@@ -5,19 +5,16 @@ set -e
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom rox
-
     mkdir -p .repo/local_manifests/
     cp -r rox/script/lineage-18.1/*.xml .repo/local_manifests/
-
     repo sync -j8 -c --no-clone-bundle --no-tags
-
     patch -p1 < $PWD/rox/script/permissive.patch
     source $PWD/rox/script/constify.sh
 }
 
 build_src() {
     source build/envsetup.sh
-    source rovx rbe
+    source rovx cache env
 
     export KBUILD_BUILD_USER=nobody
     export KBUILD_BUILD_HOST=android-build

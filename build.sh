@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom rox
@@ -9,7 +11,6 @@ setup_src() {
 
     repo sync -j8 -c --no-clone-bundle --no-tags
 
-    sed -i 's#\(<bool[^>]*name="config_cellBroadcastAppLinks"[^>]*>\)\s*true\s*\(</bool>\)#\1false\2#g' frameworks/base/core/res/res/values/config.xml
     patch -p1 < $PWD/rox/script/permissive.patch
     source $PWD/rox/script/constify.sh
 }

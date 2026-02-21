@@ -29,7 +29,7 @@ task:
   
   restore_ccache_script: rovx c restore
   build_script: ./build.sh --build
-  upload_script: ./build.sh --upload
+  upload_script: ./upload.sh
   save_ccache_script: rovx c save
 
   on_failure:

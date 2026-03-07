@@ -1,21 +1,20 @@
 env:
-  TG_TOKEN: "ENCRYPTED[!9aa257cad95736f4897f178d239e8a6b387011bada0192a6c220f8ce4b97234be111be60eb3e5d43f227e2cefa8cc20c!]"
-  TG_CHAT_ID: "ENCRYPTED[!4508643dc06e496a5bdef35696637b616238ec9af7111e0efb265d7adbee5a3f5890d487225ccdb1d259b189cf5a567d!]"
-  RBE_API_KEY: "ENCRYPTED[!b653b4ecbefa880548075b5b5bad9cda5ef36423cd87d32163910a9599a500dd447133acfcb78bbe8f4e92315c27defd!]"
-  GITHUB_TOKEN: "ENCRYPTED[!7e2f6c972d796f300f680d14570b597514746b69c84bfbaed5e0291b3e16b5a5e57baba7d1a039fdb8011c55cf140ed7!]"
+  TG_TOKEN: "ENCRYPTED[!48df36a023301be77fca5928aee9d9aa41d168a17b49a1379dcdd2544d897abdd71244a71b29f810411fefc8404625d2!]"
+  TG_CHAT_ID: "ENCRYPTED[!a12665bdcb530d0f6222ec4f353356c9819303c6a85209c78bd9c1f2d57b16912c9b96d60e567367846f2438f9f75967!]"
+  RBE_API_KEY: "ENCRYPTED[!ca80700c0523da990eb691b1baacfdc8ca6f8161e784c595bfb715801ba5ad4a512a2ff1e27403f1c094fc920ec53c39!]"
+  GITHUB_TOKEN: "ENCRYPTED[!55a825eae5c6b48595000403feb93a1e434b2f6de64ff689cfc8df0079370cfd777f7a3f304e78ec524fd06e2d3e3ac5!]"
  
 task:
   name: "Build Vanadium"
   timeout_in: 120m
   container:
-    image: ghcr.io/rovars/docker:chromium
+    image: ghcr.io/rovars/docker:chrome
     cpu: 8
     memory: 32G
     greedy: true
 
   build_script:
     - rm -rf .git
-    - /opt/cirrus_env --started
+    - rovx --start
     - git clone -q https://rovars:${GITHUB_TOKEN}@github.com/rovars/rom rom
-    - chmod +x build.sh
     - ./build.sh

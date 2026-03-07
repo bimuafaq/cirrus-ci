@@ -55,7 +55,7 @@ solutions = [
 target_os = ["android"]
 EOF
 
-fetch --nohooks --no-history android 
+gclient sync --nohooks --no-history
 
 cd src
 CHROMIUM_VERSION=$(echo "$VANADIUM_TAG" | cut -d'.' -f1-4)

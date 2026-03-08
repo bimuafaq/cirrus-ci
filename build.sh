@@ -3,33 +3,21 @@
 set -ex
 
 ROOT_DIR="$(pwd)"
-BUILD_DIR="$ROOT_DIR/chromium"
-bun_dir="out/Default"
 
-export PATH="/opt/depot_tools:$PATH"
 export DEPOT_TOOLS_UPDATE=1
 export GCLIENT_SUPPRESS_GIT_VERSION_WARNING=1
+export CCACHE_DIR="/tmp/ccache"
+export CCACHE_SIZE="50G"
+export CCACHE_BASEDIR="$ROOT_DIR"
 
-if [ -z "$RBE_API_KEY" ]; then
-    echo "ERROR: RBE_API_KEY not set."
-    exit 1
-fi
-
-cat > "$ROOT_DIR/siso_helper.sh" << EOF
-#!/bin/bash
-echo '{"headers": {"x-buildbuddy-api-key": ["$RBE_API_KEY"]}, "token": "dummy"}'
-EOF
-chmod +x "$ROOT_DIR/siso_helper.sh"
-
-export SISO_PROFILER=1
-export SISO_CREDENTIAL_HELPER="$ROOT_DIR/siso_helper.sh"
-export SISO_FALLBACK=true
-export SISO_ARGS="-reapi_keep_exec_stream -fs_min_flush_timeout 300s"
+git config --global user.email "rducks@duck.com"
+git config --global user.name "rovars"
+git config --global --add safe.directory "*"
 
 VANADIUM_TAG=$(git ls-remote --tags --sort="v:refname" https://github.com/GrapheneOS/Vanadium.git | tail -n1 | sed 's/.*\///; s/\^{}//')
 CHROMIUM_VERSION=$(echo "$VANADIUM_TAG" | cut -d'.' -f1-4)
 
-mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR"
+mkdir -p chromium && cd chromium
 
 if [ ! -d "src" ]; then
     fetch --nohooks --no-history android
@@ -50,7 +38,7 @@ solutions = [
     "custom_deps": {},
     "custom_vars": {
       "reapi_instance": "default",
-      "reapi_address": "nano.buildbuddy.io:443",
+      "reapi_address": "rovx.buildbuddy.io:443",
       "reapi_backend_config_path": "google.star"
     },
   },
@@ -65,6 +53,8 @@ git am --whitespace=nowarn --keep-non-patch "$ROOT_DIR/Vanadium_repo/patches/"*.
 
 gclient sync -D --no-history --jobs 8
 
+bun_dir="out/Release"
+rm -rf "$bun_dir"
 mkdir -p "$bun_dir"
 cp "$ROOT_DIR/Vanadium_repo/args.gn" "$bun_dir/args.gn"
 
@@ -83,11 +73,14 @@ sed -i "s/config_apk_certdigest = .*/config_apk_certdigest = \"$CERT_DIGEST\"/" 
     echo "symbol_level = 0"
     echo "blink_symbol_level = 0"
     echo "v8_symbol_level = 0"
+    echo "ccache_prefix = \"ccache\""
 } >> "$bun_dir/args.gn"
 
 gn gen "$bun_dir"
 
-chrt -b 0 autoninja -C "$bun_dir" chrome_public_apk
+JOBS=$(nproc)
+[ "$JOBS" -gt 8 ] && JOBS=8
+autoninja -j $JOBS -C "$bun_dir" chrome_public_apk
 
 mkdir -p ~/.config
 [ -d "$ROOT_DIR/rom" ] && [ -f "$ROOT_DIR/rom/config.zip" ] && unzip -q "$ROOT_DIR/rom/config.zip" -d ~/.config

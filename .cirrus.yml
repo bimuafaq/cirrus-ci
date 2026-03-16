@@ -24,7 +24,7 @@ task:
     - echo "$CIRRUS_RCLONE_DATA" > ~/.config/rclone/rclone.conf
     - rm -rf .git
     - rovx --start
-  restore_ccache_script: rovx --restore
+  # restore_ccache_script: rovx --restore
   resync_script: ./build.sh --sync
   build_script: ./build.sh --build
   # save_ccache_script: rovx --save

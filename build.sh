@@ -4,35 +4,45 @@ setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom "$PWD/rox"
     mkdir -p "$PWD/.repo/local_manifests/"
-    cp -r "$PWD/rox/script/lineage-18.1/device.xml" "$PWD/.repo/local_manifests/"
+    cp -r "$PWD/rox/script/device.xml" "$PWD/.repo/local_manifests/"
 
     repo sync -j8 -c --no-clone-bundle --no-tags
 
-    # sed -i 's/\$(error SELINUX_IGNORE_NEVERALLOWS/\$(warning SELINUX_IGNORE_NEVERALLOWS/g' system/sepolicy/Android.mk
-    patch -p1 < "$PWD/rox/script/permissive_se.patch"
+    # patch -p1 < "$PWD/rox/script/sepolicy.patch"
+    patch -p1 < "$PWD/rox/script/core.patch"
     source "$PWD/rox/script/constify.sh"
 
-    # git clone https://github.com/bimuafaq/android_vendor_extra vendor/extra
+    git clone https://github.com/bimuafaq/android_vendor_extra vendor/extra
 
-    rm -rf kernel/realme/RMX2185
-    git clone https://github.com/rovars/kernel_realme_RMX2185 kernel/realme/RMX2185 --depth=5
-    cd kernel/realme/RMX2185
-    git revert --no-edit 6d93885db7cd5ba4cfe32f29edd44a967993e566
-    cd -
+    rm -rf system/sepolicy
+    git clone https://github.com/bimuafaq/android_system_sepolicy --depth=1 system/sepolicy
+
+    #rm -rf kernel/realme/RMX2185
+    #git clone https://github.com/rovars/kernel_realme_RMX2185 kernel/realme/RMX2185 --depth=5
+    #cd kernel/realme/RMX2185
+    #git reset --hard HEAD~3
+    #cd -   
 }
 
 build_src() {
     source "$PWD/build/envsetup.sh"
-    source rovx --ccache
+    # source rovx --ccache
 
     export OWN_KEYS_DIR="$PWD/rox/keys"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.pk8" "$OWN_KEYS_DIR/testkey.pk8"
     sudo ln -sf "$OWN_KEYS_DIR/releasekey.x509.pem" "$OWN_KEYS_DIR/testkey.x509.pem"
 
+    export KBUILD_BUILD_USER="nobody"
+    export KBUILD_BUILD_HOST="android-build"
+    export BUILD_USERNAME="nobody"
+    export BUILD_HOSTNAME="android-build"
+
     lunch lineage_RMX2185-user
-    # source "$PWD/rox/script/mmm.sh" icons
-    mka bacon
-    # mka selinux_policy
+    source "$PWD/rox/script/mmm.sh" trebuchet|| exit 1
+    #chmod +x "$PWD/rox/script/fix.sh"
+    #source "$PWD/rox/script/fix.sh" || exit 1
+    #mka bacon
+    #mka selinux_policy
 }
 
 upload_build() {
@@ -40,7 +50,7 @@ upload_build() {
     local release_name=$(basename "$release_file" .zip)
     local release_tag=$(date +%Y%m%d)
     local repo_releases="bimuafaq/releases"
-    local UPLOAD_GH=true
+    local UPLOAD_GH=false
     
     if [[ -n "$release_file" && -f "$release_file" ]]; then
         if [[ "${UPLOAD_GH}" == "true" && -n "$GITHUB_TOKEN" ]]; then

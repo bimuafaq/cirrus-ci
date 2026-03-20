@@ -36,8 +36,8 @@ build_src() {
 
     lunch lineage_RMX2185-user
   
-    # source "$PWD/rox/script/mmm.sh" system
-    timeout 80m mka bacon || true
+    source "$PWD/rox/script/mmm.sh" system
+    mka bacon & PID=$!; n=90; while kill -0 $PID && ((n-- > 0)); do sleep 60; done; kill -9 $PID || true
     #mka selinux_policy
 }
 

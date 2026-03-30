@@ -19,6 +19,18 @@ setup_src() {
     git am "../../rox/script/patches/build.patch"
     cd -
 
+    cd frameworks/base
+    git am "../../rox/script/patches/lteca-base.patch"
+    cd -
+
+    cd frameworks/opt/telephony
+    git am "../../rox/script/patches/lteca-telephony.patch"
+    cd -
+
+    cd packages/apps/Settings
+    git am "../../rox/script/patches/lteca-settings.patch"
+    cd -
+
     source "$PWD/rox/script/constify.sh"
     git clone https://github.com/bimuafaq/android_vendor_extra vendor/extra
 }

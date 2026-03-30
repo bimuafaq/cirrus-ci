@@ -3,32 +3,33 @@
 setup_src() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --groups=all,-notdefault,-darwin,-mips --git-lfs --depth=1
     git clone -q https://github.com/rovars/rom "$PWD/rox"
+    local patchdir="$PWD/rox/script/patches"
     mkdir -p "$PWD/.repo/local_manifests/"
     cp -r "$PWD/rox/script/device.xml" "$PWD/.repo/local_manifests/"
 
     repo sync -j8 -c --no-clone-bundle --no-tags
 
-    patch -p1 < "$PWD/rox/script/patches/sepolicy.patch"
-    patch -p1 < "$PWD/rox/script/patches/core.patch"
+    patch -p1 < "$patchdir/sepolicy.patch"
+    patch -p1 < "$patchdir/core.patch"
 
     cd system/core
-    git am "../../rox/script/patches/corex.patch"
+    git am "$patchdir/corex.patch"
     cd -
 
     cd build/make
-    git am "../../rox/script/patches/build.patch"
+    git am "$patchdir/build.patch"
     cd -
 
     cd frameworks/base
-    git am "../../rox/script/patches/lteca-base.patch"
+    git am "$patchdir/lteca-base.patch"
     cd -
 
     cd frameworks/opt/telephony
-    git am "../../rox/script/patches/lteca-telephony.patch"
+    git am "$patchdir/lteca-telephony.patch"
     cd -
 
     cd packages/apps/Settings
-    git am "../../rox/script/patches/lteca-settings.patch"
+    git am "$patchdir/lteca-settings.patch"
     cd -
 
     source "$PWD/rox/script/constify.sh"

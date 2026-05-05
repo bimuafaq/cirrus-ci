@@ -51,8 +51,8 @@ build_src() {
 
     lunch lineage_RMX2185-user
   
-    source "$PWD/rox/script/mmm.sh" 1
-    #mka bacon #& sleep 80m; kill %1 || true
+    #source "$PWD/rox/script/mmm.sh" 1
+    mka bacon #& sleep 80m; kill %1 || true
     #mka selinux_policy
 }
 
